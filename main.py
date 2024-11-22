@@ -29,7 +29,6 @@ def write_to_csv(song_list):
     (pd.DataFrame.from_dict(data=song_list, orient='index')
      .to_csv('dict_file.csv', header=False))
 
-
 def read_from_csv(csv_file_name):
     pass
 
