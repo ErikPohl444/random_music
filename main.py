@@ -36,6 +36,9 @@ def read_from_csv(csv_file_name):
 
 
 
+
+
+
 if __name__ == '__main__':
     playlist = {}
     playlist = read_from_bookmarks('bookmarks_11_13_23.html')
