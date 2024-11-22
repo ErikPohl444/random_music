@@ -25,22 +25,8 @@ def read_from_bookmarks(bookmark_file):
 
 
 def write_to_csv(song_list):
-
     (pd.DataFrame.from_dict(data=song_list, orient='index')
      .to_csv('dict_file.csv', header=False))
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def read_from_csv(csv_file_name):
@@ -54,5 +40,5 @@ if __name__ == '__main__':
     write_to_csv(playlist)
     name, url = random.choice(list(playlist.items()))
     print(f"opening {name} using {url}")
-    chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+    chrome_path = 'open -a /Applications/Google\\ Chrome.app %s'
     webbrowser.get(chrome_path).open(url, 2)
