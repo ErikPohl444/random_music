@@ -5,6 +5,8 @@ on:
     paths:
       - '*.py'
 
+permissions: write-all
+
 jobs:
   flake8_py3:
     runs-on: ubuntu-latest
