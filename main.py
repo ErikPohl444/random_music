@@ -29,16 +29,16 @@ def write_to_csv(song_list):
      .to_csv('dict_file.csv', header=False))
 
 
-def read_from_csv(csv_file_name):
+def read_from_csv():
     pass
 
 
 if __name__ == '__main__':
-    playlist = {}
     playlist = read_from_bookmarks('bookmarks_11_13_23.html')
     print(playlist)
     write_to_csv(playlist)
-    name, url = random.choice(list(playlist.items()))
-    print(f"opening {name} using {url}")
+    (playlist_item_name,
+     playlist_item_url) = random.choice(list(playlist.items()))
+    print(f"opening {playlist_item_name} using {playlist_item_url}")
     chrome_path = 'open -a /Applications/Google\\ Chrome.app %s'
-    webbrowser.get(chrome_path).open(url, 2)
+    webbrowser.get(chrome_path).open(playlist_item_url, 2)
