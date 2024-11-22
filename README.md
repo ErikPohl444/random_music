@@ -1,7 +1,8 @@
 # random_music
 
-Problem to solve: I have a collection of Youtube bookmarks not in a playlist on any application.  I want to be surprised by a randomized music selection, selected from my bookmarks.
+Problem to solve: I have a collection of YouTube bookmarks not in a playlist on any application.  I want to be surprised by a randomized music selection, selected from my bookmarks.
 
+**Note**: In this repo, I tested both pre-commit for git and GitHub actions using Yaml and confirmed both executed flake8 for linting.  I like both, but Actions is more foolproof.
 ## Future plans
 
 - [ ] Move future plans to issues
@@ -19,7 +20,7 @@ Download files.  Read the code and figure out how to hook it to an input file.  
 
 ## Prerequisites
 
-I'll provide prereqs here.
+I'll provide pre-reqs here.
 
 ## Installing
 
@@ -37,7 +38,7 @@ For now, I'd be excited to receive pull requests.  I don't have rules for contri
 
 * **Erik Pohl** - *Initial work* - 
 
-Also see the list of github contributors.
+Also see the list of GitHub contributors.
 
 ## License
 
