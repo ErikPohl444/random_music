@@ -2,11 +2,11 @@ import webbrowser
 import pandas as pd
 import random
 
-
 # output dictionary as spreadsheet
 # class entries in spreadsheet by category
 # select only entries in a category
 # angular front end?
+
 
 def read_from_bookmarks(bookmark_file):
     bookmarks_names_urls = {}
