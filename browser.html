@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+</head>
+<body>
+    <div ng-app>
+        <input type="text" ng-model="calculator" style="width: 300px;" />
+        <h3>{{calculator + " = " + ($eval(calculator) | number)}}</h3>
+        <object data="https://www.youtube.com/watch?v=lIBb8oV0eSk&list=RDlIBb8oV0eSk&start_radio=1" width="600" height="400">
+            <embed src="https://www.youtube.com/watch?v=lIBb8oV0eSk&list=RDlIBb8oV0eSk&start_radio=1" width="600" height="400"/>
+        </object>
+    </div>
+</body>
+</html>
