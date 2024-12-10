@@ -40,5 +40,5 @@ if __name__ == '__main__':
     (playlist_item_name,
      playlist_item_url) = random.choice(list(playlist.items()))
     print(f"opening {playlist_item_name} using {playlist_item_url}")
-    chrome_path = 'open -a /Applications/Google\\ Chrome.app %s'
+    chrome_path = r'open -a /Applications/Google\ Chrome.app %s'
     webbrowser.get(chrome_path).open(playlist_item_url, 2)
