@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+</head>
+<body>
+    <div ng-app>
+        <input type="text" ng-model="calculator" style="width: 300px;" />
+        <h3>{{calculator + " = " + ($eval(calculator) | number)}}</h3>
+    </div>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/lIBb8oV0eSk" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>
