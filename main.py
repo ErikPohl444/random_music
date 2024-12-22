@@ -40,10 +40,11 @@ if __name__ == '__main__':
         configs = json.load(config_handle)
     # save this for later!
     # playlist = read_from_bookmarks(configs["bookmarks"])
-    songs = read_from_csv()
+    csv_file_name = configs["csv_file_name"]
+    songs = read_from_csv(csv_file_name)
     song_list = dict(songs.values.tolist())
     # save this for later
-    # write_to_csv(song_list)
+    # write_to_csv(csv_file_name, song_list)
     (songlist_item_name,
      songlist_item_url) = random.choice(list(song_list.items()))
     print(f"opening {songlist_item_name} using {songlist_item_url}")
