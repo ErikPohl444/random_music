@@ -11,8 +11,20 @@ Problem to solve: I have a collection of YouTube bookmarks not in a playlist on 
  
 ## Important disclaimer
 
-THIS CODE IS TERRIBLE.  I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.
+THIS CODE IS TERRIBLE.  
+I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.
 
+** Look at the start of process here **
+What I do at work is a lot more complex, but I was very quickly able to assemble:
+* a primitive CI/CD process with 
+    * Git Hooks instantiated through pre-commit
+    * GitHub Actions
+* Issue templates for 
+    * Bugs
+    * Features
+    * Information requests
+
+I'll continue work on the process here, even if the code languishes a bit.
 
 ## Getting Started
 
