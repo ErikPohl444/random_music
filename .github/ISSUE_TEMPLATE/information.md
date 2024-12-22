@@ -1,6 +1,6 @@
 ---
 name: Information issue template
-about: This is the template for an information request, in which you are not making a bug or feature request, just asking for info about the code. This is a good step if you believe there's a bug or feature needed, but you aren't sure.
+about: This is the template for an information request, in which you are not making a bug or feature request, just asking for info about the code before submitting a bug or feature.
 title: ''
 labels: ''
 assignees: ''
