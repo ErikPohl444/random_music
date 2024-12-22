@@ -38,16 +38,14 @@ def read_from_csv():
 if __name__ == '__main__':
     with open("config.json") as config_handle:
         configs = json.load(config_handle)
-    playlist = read_from_bookmarks(configs["bookmarks"])
-    print(playlist)
+    # save this for later!
+    # playlist = read_from_bookmarks(configs["bookmarks"])
     songs = read_from_csv()
     song_list = dict(songs.values.tolist())
-    print(song_list)
-    print(len(playlist))
-    print(len(song_list))
-    write_to_csv(playlist)
-    (playlist_item_name,
-     playlist_item_url) = random.choice(list(playlist.items()))
-    print(f"opening {playlist_item_name} using {playlist_item_url}")
+    # save this for later
+    # write_to_csv(song_list)
+    (songlist_item_name,
+     songlist_item_url) = random.choice(list(song_list.items()))
+    print(f"opening {songlist_item_name} using {songlist_item_url}")
     chrome_path = r'open -a /Applications/Google\ Chrome.app %s'
-    webbrowser.get(chrome_path).open(playlist_item_url, 2)
+    webbrowser.get(chrome_path).open(songlist_item_url, 2)
