@@ -38,7 +38,7 @@ if __name__ == '__main__':
     playlist = read_from_bookmarks('bookmarks_11_13_23.html')
     print(playlist)
     songs = read_from_csv()
-    song_list = songs.values.tolist()
+    song_list = songs.to_dict()
     print(len(playlist))
     print(len(song_list))
     write_to_csv(playlist)
