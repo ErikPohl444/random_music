@@ -30,13 +30,17 @@ def write_to_csv(song_list):
 
 
 def read_from_csv():
-    # test comment only
-    pass
+    song_list = pd.read_csv('dict_file.csv')
+    return song_list
 
 
 if __name__ == '__main__':
     playlist = read_from_bookmarks('bookmarks_11_13_23.html')
     print(playlist)
+    songs = read_from_csv()
+    song_list = songs.values.tolist()
+    print(len(playlist))
+    print(len(song_list))
     write_to_csv(playlist)
     (playlist_item_name,
      playlist_item_url) = random.choice(list(playlist.items()))
