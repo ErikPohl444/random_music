@@ -30,8 +30,8 @@ def write_to_csv(song_list):
      .to_csv('dict_file.csv', header=False))
 
 
-def read_from_csv():
-    song_list = pd.read_csv('dict_file.csv', header=None)
+def read_from_csv(csv_file_name):
+    song_list = pd.read_csv(csv_file_name, header=None)
     return song_list
 
 
