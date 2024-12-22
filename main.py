@@ -1,6 +1,7 @@
 import webbrowser
 import pandas as pd
 import random
+import json
 
 # output dictionary as spreadsheet
 # class entries in spreadsheet by category
@@ -30,15 +31,18 @@ def write_to_csv(song_list):
 
 
 def read_from_csv():
-    song_list = pd.read_csv('dict_file.csv')
+    song_list = pd.read_csv('dict_file.csv', header=None)
     return song_list
 
 
 if __name__ == '__main__':
-    playlist = read_from_bookmarks('bookmarks_11_13_23.html')
+    with open("config.json") as config_handle:
+        configs = json.load(config_handle)
+    playlist = read_from_bookmarks(configs["bookmarks"])
     print(playlist)
     songs = read_from_csv()
-    song_list = songs.to_dict()
+    song_list = dict(songs.values.tolist())
+    print(song_list)
     print(len(playlist))
     print(len(song_list))
     write_to_csv(playlist)
