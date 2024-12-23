@@ -84,5 +84,4 @@ if __name__ == '__main__':
      songlist_item_url) = random.choice(songs.values.tolist())
     logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
     chrome_path = f'{configs["chrome_path"]} %s'
-    print(chrome_path)
     webbrowser.get(chrome_path).open(songlist_item_url, 2)
