@@ -37,12 +37,20 @@ def write_to_csv(csv_file_name, song_list):
     )
 
 
+def read_from_excel(excel_file_name):
+    songs = pd.read_excel('test.xlsx', usecols=["Song_Name", "Song_URL"])
+    return songs
+
+
 def read_from_csv(csv_file_name):
     song_list = pd.read_csv(
         csv_file_name,
         header=0,
         names=['Song_Name', 'Song_URL']
     )
+    print("song list")
+    print(song_list)
+    print("end song list")
     return song_list
 
 
@@ -51,6 +59,7 @@ if __name__ == '__main__':
         configs = json.load(config_handle)
     # save this for later!
     songs = read_from_bookmarks(configs["bookmarks"])
+    # songs = read_from_excel('test.xlsx')
     print(songs)
     csv_file_name = configs["csv_file_name"]
     # songs = read_from_csv(csv_file_name)
