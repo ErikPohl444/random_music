@@ -48,7 +48,10 @@ def write_to_csv(csv_file_name, song_list):
 
 
 def read_from_excel(excel_file_name):
-    songs = pd.read_excel(excel_file_name, usecols=["Song_Name", "Song_URL"])
+    songs = pd.read_excel(
+        excel_file_name,
+        usecols=["Song_Name", "Song_URL"]
+    )
     logger.info(f"loaded {len(songs)} songs into the song list")
     return songs
 
