@@ -67,6 +67,7 @@ def read_from_csv(csv_file_name):
 
 
 if __name__ == '__main__':
+    # good config.json will have all elements in config_template.json
     with open("config.json") as config_handle:
         configs = json.load(config_handle)
     logger.info("loaded program configurations")
