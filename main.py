@@ -7,8 +7,9 @@ from setup_logging import logger
 
 class PlayList:
 
-    def __init__(self):
+    def __init__(self, chrome_path):
         self.songs = pd.DataFrame()
+        self.chrome_path = chrome_path
 
     def read_from_bookmarks(self, bookmark_file):
         bookmarks_names_urls = {}
@@ -36,18 +37,18 @@ class PlayList:
             columns=['Song_Name', 'Song_URL']
         )
         logger.info(
-            f"loaded {len(bookmarks_names_urls)} songs into a song list"
+            f"loaded {len(self.songs)} songs into a song list"
         )
         return self.songs
 
-    def write_to_csv(self, csv_file_name, song_list):
+    def write_to_csv(self, csv_file_name):
         self.songs.to_csv(
             csv_file_name,
             columns=['Song_Name', 'Song_URL'],
             index_label="Index"
         )
         logger.info(
-            f"completed writing {len(song_list)} songs "
+            f"completed writing {len(self.songs)} songs "
             f"from song list into {csv_file_name}"
         )
         return True
@@ -73,7 +74,7 @@ class PlayList:
         (songlist_item_name,
          songlist_item_url) = random.choice(self.songs.values.tolist())
         logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
-        chrome_path = f'{configs["chrome_path"]} %s'
+        chrome_path = f'{self.chrome_path} %s'
         webbrowser.get(chrome_path).open(songlist_item_url, 2)
 
 
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     with open("config.json") as config_handle:
         configs = json.load(config_handle)
     logger.info("loaded program configurations")
-    my_playlist = PlayList()
+    my_playlist = PlayList(configs["chrome_path"])
     # save this for later!
     # songs = read_from_bookmarks(configs["bookmarks"])
     songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
