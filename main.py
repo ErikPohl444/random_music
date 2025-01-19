@@ -81,9 +81,10 @@ class PlayList:
 if __name__ == '__main__':
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
-    with open("config.json") as config_handle:
+    config_file_name = 'config.json'
+    with open(config_file_name) as config_handle:
         configs = json.load(config_handle)
-    logger.info("loaded program configurations")
+    logger.info(f"loaded program configurations from {config_file_name}")
     my_playlist = PlayList(configs["chrome_path"])
     # save this for later!
     # songs = read_from_bookmarks(configs["bookmarks"])
