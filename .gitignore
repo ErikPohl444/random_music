@@ -1,1 +1,5 @@
 .idea/
+__pycache__/
+config.json
+dict_file.csv
+test.xlsx
