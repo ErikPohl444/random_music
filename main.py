@@ -10,20 +10,25 @@ class PlayList:
     def __init__(self, chrome_path):
         self.songs = pd.DataFrame()
         self.chrome_path = chrome_path
+        self.SONG_NAME_COLUMN = 'Song_Name'
+        self.SONG_URL_COLUMN = 'Song_URL'
 
     def read_from_bookmarks(self, bookmark_file):
         bookmarks_names_urls = {}
-        with open(bookmark_file, newline='') as file_handle:
-            for linecount, line in enumerate(file_handle):
-                if linecount != 0 and 'youtube' in line:
-                    if '<DT>' in line:
-                        url_start_loc = line.find('A HREF="') + 8
-                        url_end_loc = line.find('"', url_start_loc + 1)
-                        url = line[url_start_loc:url_end_loc]
-                        name_start_loc = line.find('">', url_end_loc) + 2
-                        name_end_loc = line.find('</A>', name_start_loc)
-                        name = line[name_start_loc:name_end_loc]
-                        bookmarks_names_urls.update({name: url})
+        try:
+            with open(bookmark_file, newline='') as file_handle:
+                for linecount, line in enumerate(file_handle):
+                    if linecount != 0 and 'youtube' in line:
+                        if '<DT>' in line:
+                            url_start_loc = line.find('A HREF="') + 8
+                            url_end_loc = line.find('"', url_start_loc + 1)
+                            url = line[url_start_loc:url_end_loc]
+                            name_start_loc = line.find('">', url_end_loc) + 2
+                            name_end_loc = line.find('</A>', name_start_loc)
+                            name = line[name_start_loc:name_end_loc]
+                            bookmarks_names_urls.update({name: url})
+        except:
+            logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
         prepared_dict = {
             song_key: song_value
             for song_key, song_value
@@ -34,7 +39,7 @@ class PlayList:
         self.songs = pd.DataFrame.from_dict(
             prepared_dict,
             orient="index",
-            columns=['Song_Name', 'Song_URL']
+            columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         logger.info(
             f"loaded {len(self.songs)} songs into a song list"
@@ -44,7 +49,7 @@ class PlayList:
     def write_to_csv(self, csv_file_name):
         self.songs.to_csv(
             csv_file_name,
-            columns=['Song_Name', 'Song_URL'],
+            columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN],
             index_label="Index"
         )
         logger.info(
@@ -56,7 +61,7 @@ class PlayList:
     def read_from_excel(self, excel_file_name):
         self.songs = pd.read_excel(
             excel_file_name,
-            usecols=["Song_Name", "Song_URL"]
+            usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
@@ -65,17 +70,23 @@ class PlayList:
         self.songs = pd.read_csv(
             csv_file_name,
             header=0,
-            names=['Song_Name', 'Song_URL']
+            names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
     def play_random(self):
-        (songlist_item_name,
-         songlist_item_url) = random.choice(self.songs.values.tolist())
+        try:
+            (songlist_item_name,
+            songlist_item_url) = random.choice(self.songs.values.tolist())
+        except:
+            logger.error(f"error opening songs to make a random choice")
         logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
-        chrome_path = f'{self.chrome_path} %s'
-        webbrowser.get(chrome_path).open(songlist_item_url, 2)
+        try:
+            chrome_path = f'{self.chrome_path} %s'
+            webbrowser.get(chrome_path).open(songlist_item_url, 2)
+        except:
+            logger.error("received an error when opening chrome to execute the song url")
 
 
 if __name__ == '__main__':
