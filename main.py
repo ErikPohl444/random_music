@@ -87,12 +87,12 @@ if __name__ == '__main__':
     logger.info(f"loaded program configurations from {config_file_name}")
     my_playlist = PlayList(configs["chrome_path"])
     # save this for later!
-    # songs = read_from_bookmarks(configs["bookmarks"])
-    songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
+    songs = my_playlist.read_from_bookmarks(configs["bookmarks"])
+    #songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
     # print(songs)
     # csv_file_name = configs["csv_file_name"]
     # songs = read_from_csv(csv_file_name)
-    # songs.to_excel(configs["xlsx_file_name"], index_label="Index")
+    songs.to_excel(configs["xlsx_file_name"], index_label="Index")
     # song_list = dict(songs.values.tolist())
     # save this for later
     # write_to_csv(csv_file_name, songs)
