@@ -3,7 +3,7 @@ import pandas as pd
 import random
 import json
 from setup_logging import logger
-1
+
 
 class PlayList:
 
@@ -27,7 +27,7 @@ class PlayList:
                             name_end_loc = line.find('</A>', name_start_loc)
                             name = line[name_start_loc:name_end_loc]
                             bookmarks_names_urls.update({name: url})
-        except:
+        except FileNotFoundError:
             logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
         prepared_dict = {
             song_key: song_value
@@ -76,12 +76,13 @@ class PlayList:
         return self.songs
 
     def play_random(self):
+        songlist_item_url = ''
         try:
             (songlist_item_name,
-            songlist_item_url) = random.choice(self.songs.values.tolist())
+             songlist_item_url) = random.choice(self.songs.values.tolist())
+            logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
         except:
             logger.error(f"error opening songs to make a random choice")
-        logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
         try:
             chrome_path = f'{self.chrome_path} %s'
             webbrowser.get(chrome_path).open(songlist_item_url, 2)
@@ -99,7 +100,7 @@ if __name__ == '__main__':
     my_playlist = PlayList(configs["chrome_path"])
     # save this for later!
     songs = my_playlist.read_from_bookmarks(configs["bookmarks"])
-    #songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
+    # songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
     # print(songs)
     # csv_file_name = configs["csv_file_name"]
     # songs = read_from_csv(csv_file_name)
