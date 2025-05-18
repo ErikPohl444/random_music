@@ -28,15 +28,34 @@ I'll continue work on the process here, even if the code languishes a bit.
 
 ## Getting Started
 
-Download files.  Read the code and figure out how to hook it to an input file.  Execute it at your own peril ;)
+Clone the repository to your local machine, ensure you have your bookmarks or playlist file available, and configure the required paths in a `config.json` file.
+
+```bash
+git clone https://github.com/ErikPohl444/random_music.git
+cd random_music
+```
 
 ## Prerequisites
 
-I'll provide pre-reqs here.
+- Python 3.8 or higher
+- Google Chrome (the path to the Chrome executable must be specified in `config.json`)
+- An exported Chrome bookmarks file or a CSV/Excel file containing your song names and YouTube URLs
+
+Install the required Python packages using the provided `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Installing
 
-I will provide installation steps here.
+1. Clone this repository.
+2. Install dependencies:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Copy `config_template.json` to `config.json` and update it with the correct paths for your Chrome executable and bookmarks or playlist file.
+4. Place your bookmarks or playlist file in the project directory or update the path in `config.json` accordingly.
 
 ## Running the tests
 
