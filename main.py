@@ -46,7 +46,7 @@ class PlayList:
         )
         return self.songs
 
-    def write_to_csv(self, csv_file_name: str):
+    def write_to_csv(self, csv_file_name: str) -> bool:
         self.songs.to_csv(
             csv_file_name,
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN],
@@ -75,9 +75,11 @@ class PlayList:
         logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
-    def play_random(self):
+    def play_random(self) -> None:
         songlist_item_url: str = ''
+        songlist_item_name: str
         try:
+
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
             logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
