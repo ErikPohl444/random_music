@@ -8,10 +8,10 @@ from setup_logging import logger
 class PlayList:
 
     def __init__(self, chrome_path: str):
-        self.songs = pd.DataFrame()
+        self.songs: pd.DataFrame = pd.DataFrame()
         self.chrome_path = chrome_path
-        self.SONG_NAME_COLUMN = 'Song_Name'
-        self.SONG_URL_COLUMN = 'Song_URL'
+        self.SONG_NAME_COLUMN: str = 'Song_Name'
+        self.SONG_URL_COLUMN: str = 'Song_URL'
 
     def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
         bookmarks_names_urls: dict = {}
@@ -20,12 +20,12 @@ class PlayList:
                 for linecount, line in enumerate(file_handle):
                     if linecount != 0 and 'youtube' in line:
                         if '<DT>' in line:
-                            url_start_loc = line.find('A HREF="') + 8
-                            url_end_loc = line.find('"', url_start_loc + 1)
-                            url = line[url_start_loc:url_end_loc]
-                            name_start_loc = line.find('">', url_end_loc) + 2
-                            name_end_loc = line.find('</A>', name_start_loc)
-                            name = line[name_start_loc:name_end_loc]
+                            url_start_loc: int = line.find('A HREF="') + 8
+                            url_end_loc: int = line.find('"', url_start_loc + 1)
+                            url: str = line[url_start_loc:url_end_loc]
+                            name_start_loc: int = line.find('">', url_end_loc) + 2
+                            name_end_loc: int = line.find('</A>', name_start_loc)
+                            name: str = line[name_start_loc:name_end_loc]
                             bookmarks_names_urls.update({name: url})
         except FileNotFoundError:
             logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
