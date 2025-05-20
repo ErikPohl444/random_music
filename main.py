@@ -14,7 +14,7 @@ class PlayList:
         self.SONG_URL_COLUMN = 'Song_URL'
 
     def read_from_bookmarks(self, bookmark_file_name: str):
-        bookmarks_names_urls = {}
+        bookmarks_names_urls: dict = {}
         try:
             with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
@@ -29,7 +29,7 @@ class PlayList:
                             bookmarks_names_urls.update({name: url})
         except FileNotFoundError:
             logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
-        prepared_dict = {
+        prepared_dict: dict = {
             song_key: song_value
             for song_key, song_value
             in enumerate(
@@ -46,7 +46,7 @@ class PlayList:
         )
         return self.songs
 
-    def write_to_csv(self, csv_file_name):
+    def write_to_csv(self, csv_file_name: str):
         self.songs.to_csv(
             csv_file_name,
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN],
@@ -58,7 +58,7 @@ class PlayList:
         )
         return True
 
-    def read_from_excel(self, excel_file_name):
+    def read_from_excel(self, excel_file_name: str):
         self.songs = pd.read_excel(
             excel_file_name,
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
@@ -66,7 +66,7 @@ class PlayList:
         logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
-    def read_from_csv(self, csv_file_name):
+    def read_from_csv(self, csv_file_name: str):
         self.songs = pd.read_csv(
             csv_file_name,
             header=0,
@@ -76,7 +76,7 @@ class PlayList:
         return self.songs
 
     def play_random(self):
-        songlist_item_url = ''
+        songlist_item_url: str = ''
         try:
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
@@ -84,7 +84,7 @@ class PlayList:
         except:
             logger.error(f"error opening songs to make a random choice")
         try:
-            chrome_path = f'{self.chrome_path} %s'
+            chrome_path: str = f'{self.chrome_path} %s'
             webbrowser.get(chrome_path).open(songlist_item_url, 2)
         except:
             logger.error("received an error when opening chrome to execute the song url")
@@ -93,9 +93,9 @@ class PlayList:
 if __name__ == '__main__':
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
-    config_file_name = 'config.json'
+    config_file_name: str = 'config.json'
     with open(config_file_name) as config_handle:
-        configs = json.load(config_handle)
+        configs: json = json.load(config_handle)
     logger.info(f"loaded program configurations from {config_file_name}")
     my_playlist = PlayList(configs["chrome_path"])
     # save this for later!
