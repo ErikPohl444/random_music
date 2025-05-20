@@ -7,9 +7,10 @@ from setup_logging import logger
 
 class PlayList:
 
-    def __init__(self, chrome_path: str):
+    def __init__(self, chrome_path: str, logger):
         self.songs: pd.DataFrame = pd.DataFrame()
         self.chrome_path = chrome_path
+        self.logger = logger
         self.SONG_NAME_COLUMN: str = 'Song_Name'
         self.SONG_URL_COLUMN: str = 'Song_URL'
 
@@ -28,7 +29,7 @@ class PlayList:
                             name: str = line[name_start_loc:name_end_loc]
                             bookmarks_names_urls.update({name: url})
         except FileNotFoundError:
-            logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
+            self.logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
         prepared_dict: dict = {
             song_key: song_value
             for song_key, song_value
@@ -41,7 +42,7 @@ class PlayList:
             orient="index",
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
-        logger.info(
+        self.logger.info(
             f"loaded {len(self.songs)} songs into a song list"
         )
         return self.songs
@@ -52,7 +53,7 @@ class PlayList:
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN],
             index_label="Index"
         )
-        logger.info(
+        self.logger.info(
             f"completed writing {len(self.songs)} songs "
             f"from song list into {csv_file_name}"
         )
@@ -63,7 +64,7 @@ class PlayList:
             excel_file_name,
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
-        logger.info(f"loaded {len(self.songs)} songs into the song list")
+        self.logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
     def read_from_csv(self, csv_file_name: str) -> pd.DataFrame:
@@ -72,7 +73,7 @@ class PlayList:
             header=0,
             names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
-        logger.info(f"loaded {len(self.songs)} songs into the song list")
+        self.logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
     def play_random(self) -> None:
@@ -81,14 +82,14 @@ class PlayList:
         try:
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
-            logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
+            self.logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
         except:
-            logger.error(f"error opening songs to make a random choice")
+            self.logger.error(f"error opening songs to make a random choice")
         try:
             chrome_path: str = f'{self.chrome_path} %s'
             webbrowser.get(chrome_path).open(songlist_item_url, 2)
         except:
-            logger.error("received an error when opening chrome to execute the song url")
+            self.logger.error("received an error when opening chrome to execute the song url")
 
 
 if __name__ == '__main__':
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     with open(config_file_name) as config_handle:
         configs: json = json.load(config_handle)
     logger.info(f"loaded program configurations from {config_file_name}")
-    my_playlist: PlayList = PlayList(configs["chrome_path"])
+    my_playlist: PlayList = PlayList(configs["chrome_path"], logger)
     # save this for later!
     songs: pd.DataFrame = my_playlist.read_from_bookmarks(configs["bookmarks"])
     # songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
