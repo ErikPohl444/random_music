@@ -13,7 +13,7 @@ class PlayList:
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
 
-    def read_from_bookmarks(self, bookmark_file_name: str):
+    def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
         bookmarks_names_urls: dict = {}
         try:
             with open(bookmark_file_name, newline='') as file_handle:
@@ -58,7 +58,7 @@ class PlayList:
         )
         return True
 
-    def read_from_excel(self, excel_file_name: str):
+    def read_from_excel(self, excel_file_name: str) -> pd.DataFrame:
         self.songs = pd.read_excel(
             excel_file_name,
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
@@ -66,7 +66,7 @@ class PlayList:
         logger.info(f"loaded {len(self.songs)} songs into the song list")
         return self.songs
 
-    def read_from_csv(self, csv_file_name: str):
+    def read_from_csv(self, csv_file_name: str) -> pd.DataFrame:
         self.songs = pd.read_csv(
             csv_file_name,
             header=0,
