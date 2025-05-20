@@ -79,7 +79,6 @@ class PlayList:
         songlist_item_url: str = ''
         songlist_item_name: str
         try:
-
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
             logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
