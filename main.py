@@ -97,9 +97,9 @@ if __name__ == '__main__':
     with open(config_file_name) as config_handle:
         configs: json = json.load(config_handle)
     logger.info(f"loaded program configurations from {config_file_name}")
-    my_playlist = PlayList(configs["chrome_path"])
+    my_playlist: PlayList = PlayList(configs["chrome_path"])
     # save this for later!
-    songs = my_playlist.read_from_bookmarks(configs["bookmarks"])
+    songs: pd.DataFrame = my_playlist.read_from_bookmarks(configs["bookmarks"])
     # songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
     # print(songs)
     # csv_file_name = configs["csv_file_name"]
