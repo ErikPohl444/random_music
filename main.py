@@ -7,16 +7,16 @@ from setup_logging import logger
 
 class PlayList:
 
-    def __init__(self, chrome_path):
+    def __init__(self, chrome_path: str):
         self.songs = pd.DataFrame()
         self.chrome_path = chrome_path
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
 
-    def read_from_bookmarks(self, bookmark_file):
+    def read_from_bookmarks(self, bookmark_file_name: str):
         bookmarks_names_urls = {}
         try:
-            with open(bookmark_file, newline='') as file_handle:
+            with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
                     if linecount != 0 and 'youtube' in line:
                         if '<DT>' in line:
