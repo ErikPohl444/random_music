@@ -112,8 +112,7 @@ def read_config_file(config_file_name: str) -> json:
     return loaded_configs
 
 
-if __name__ == '__main__':
-
+def execute_random_song_selection():
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
     configs: json = read_config_file('config.json')
@@ -131,3 +130,8 @@ if __name__ == '__main__':
     # save this for later
     # write_to_csv(csv_file_name, songs)
     my_playlist.play_random()
+
+
+if __name__ == '__main__':
+    execute_random_song_selection()
+
