@@ -22,10 +22,10 @@ class Browser:
 
 class PlayList:
 
-    def __init__(self, browser: Browser, logger: setup_logging.logger):
+    def __init__(self, browser: Browser, playlist_logger: setup_logging.logger):
         self.songs = pd.DataFrame()
         self.browser = browser
-        self.logger = logger
+        self.logger = playlist_logger
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
 
@@ -43,8 +43,8 @@ class PlayList:
                             name_end_loc: int = line.find('</A>', name_start_loc)
                             name: str = line[name_start_loc:name_end_loc]
                             bookmarks_names_urls.update({name: url})
-        except FileNotFoundError:
-            self.logger.error("exception encountered when opening bookmark file and parsing the bookmarks")
+        except FileNotFoundError as e:
+            self.logger.error(f"exception encountered when opening bookmark file and parsing the bookmarks: {e}")
         formatted_song_info: dict = {
             song_key: song_value
             for song_key, song_value
@@ -97,8 +97,8 @@ class PlayList:
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
             self.logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
-        except TypeError:
-            self.logger.error(f"error opening songs to make a random choice")
+        except TypeError as e:
+            self.logger.error(f"error opening songs to make a random choice: {e}")
         self.browser.open_browser_with_url(songlist_item_url)
 
 
