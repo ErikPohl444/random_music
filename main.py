@@ -1,17 +1,30 @@
 import webbrowser
 import pandas as pd
 import random
-import json
-
+import json     
 import setup_logging
 from setup_logging import logger
 
 
+class Browser:
+
+    def __init__(self, browser_executable_path: str, browser_logger: logger):
+        self.browser_executable_path = browser_executable_path
+        self.browser_logger = browser_logger
+
+    def open_browser_with_url(self, url: str):
+        print(self.browser_executable_path, url)
+        try:
+            webbrowser.get(self.browser_executable_path).open(url, 2)
+        except webbrowser.Error as e:
+            self.browser_logger.info(f"issue opening web browser with this url: {e}")
+
+
 class PlayList:
 
-    def __init__(self, chrome_path: str, logger: setup_logging.logger):
+    def __init__(self, browser: Browser, logger: setup_logging.logger):
         self.songs = pd.DataFrame()
-        self.chrome_path = chrome_path
+        self.browser = browser
         self.logger = logger
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
@@ -84,23 +97,22 @@ class PlayList:
             (songlist_item_name,
              songlist_item_url) = random.choice(self.songs.values.tolist())
             self.logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
-        except:
+        except TypeError:
             self.logger.error(f"error opening songs to make a random choice")
-        try:
-            chrome_path = f'{self.chrome_path} %s'
-            webbrowser.get(chrome_path).open(songlist_item_url, 2)
-        except:
-            self.logger.error("received an error when opening chrome to execute the song url")
+        self.browser.open_browser_with_url(songlist_item_url)
 
 
 if __name__ == '__main__':
+
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
     config_file_name = 'config.json'
     with open(config_file_name) as config_handle:
         configs: json = json.load(config_handle)
     logger.info(f"loaded program configurations from {config_file_name}")
-    my_playlist = PlayList(configs["chrome_path"], logger)
+    print(configs["chrome_path"])
+    chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
+    my_playlist = PlayList(chrome_browser, logger)
     # save this for later!
     songs: pd.DataFrame = my_playlist.read_from_bookmarks(configs["bookmarks"])
     # songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
