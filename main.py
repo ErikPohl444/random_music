@@ -102,14 +102,21 @@ class PlayList:
         self.browser.open_browser_with_url(songlist_item_url)
 
 
+def read_config_file(config_file_name: str) -> json:
+    try:
+        with open(config_file_name) as config_handle:
+            loaded_configs: json = json.load(config_handle)
+        logger.info(f"loaded program configurations from {config_file_name}")
+    except FileNotFoundError as e:
+        logger.info(f'configuration file not found at {config_file_name} producing error {e}')
+    return loaded_configs
+
+
 if __name__ == '__main__':
 
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
-    config_file_name = 'config.json'
-    with open(config_file_name) as config_handle:
-        configs: json = json.load(config_handle)
-    logger.info(f"loaded program configurations from {config_file_name}")
+    configs: json = read_config_file('config.json')
     print(configs["chrome_path"])
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
     my_playlist = PlayList(chrome_browser, logger)
