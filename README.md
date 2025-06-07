@@ -61,11 +61,6 @@ pip install -r requirements.txt
 3. Copy `config_template.json` to `config.json` and update it with the correct paths for your Chrome executable and bookmarks or playlist file.
 4. Place your bookmarks or playlist file in the project directory or update the path in `config.json` accordingly.
 
-## Running the tests
-
-Yes, if the tests in /tests are written for pytest, the instructions should use pytest instead of unittest. Here’s a revised "Running the Tests" section for your README.md:
-
-```markdown
 ## Running the Tests
 
 This assumes you've already installed the code and the requirements in requirements.txt.
