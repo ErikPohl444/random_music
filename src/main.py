@@ -238,22 +238,7 @@ def read_config_file(config_file_name: str = "./config.json") -> json:
         logger.info(f'configuration file not found at {config_file_name} producing error {e}')
     return loaded_configs
 
-
-def execute_random_song_selection():
-    """Reads configurations and, based on the configurations, loads a list of song data, selecting one to play.
-
-    Args:
-        No parameters
-
-    Returns:
-        None
-    """
-
-    # good config.json will have all elements in config_template.json
-    # except just the file type used will need a good value
-    configs: json = read_config_file()
-    chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
-    # read cli arguments
+def get_args(configs):
     parser = argparse.ArgumentParser(description="Example program")
     # Add arguments
     parser.add_argument(
@@ -288,14 +273,31 @@ def execute_random_song_selection():
         default=configs["csv_file_name"],
         help='csv file name to read from'
     )
-    args = parser.parse_args()
+    return parser.parse_args()
+
+def execute_random_song_selection():
+    """Reads configurations and, based on the configurations, loads a list of song data, selecting one to play.
+
+    Args:
+        No parameters
+
+    Returns:
+        None
+    """
+
+    # good config.json will have all elements in config_template.json
+    # except just the file type used will need a good value
+    configs: json = read_config_file()
+    chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
+    # read cli arguments
+    args = get_args(configs)
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
         songs: pd.DataFrame = my_playlist.read_from_bookmarks(args.read_from_bookmarks)
     # if args.read_from_csv:
     #    songs = my_playlist.read_from_csv(args.read_from_csv)
-    if songs:
-        if args.write_to_xlsx:
+    if songs.bool:
+        if args.wx:
             songs.to_excel(configs["xlsx_file_name"], index_label="Index")
         # if args.write_to_csv:
         #     my_playlist.write_to_csv(args.write_to_csv, songs)
