@@ -5,6 +5,8 @@ import json
 import setup_logging
 import os
 from setup_logging import logger
+import argparse
+
 
 # Using standardized comments here even though the code is self documenting
 # 1. to show what it looks like [I can always reduce comments later]
@@ -72,7 +74,8 @@ class PlayList:
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
 
-    def _split_a_href(self, html_line: str) -> [str, str]:
+    @staticmethod
+    def _split_a_href(html_line: str) -> [str, str]:
         """Removes the link name and link url from a line of html containing an "a href"
 
         Args:
@@ -89,18 +92,17 @@ class PlayList:
         name: str = html_line[name_start_loc:name_end_loc]
         return [name, url]
 
-    def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
-        """Reads YouTube song links from a Chrome bookmarks file.
+    def _read_youtube_links(self, bookmark_file_name: str) -> dict:
+        """Reads a flat file containing a bookmarks export from Chrome and extracts the youtube links
 
         Args:
             bookmark_file_name (str): Path to the bookmarks file.
 
         Returns:
-            pd.DataFrame: DataFrame containing song names and URLs.
+            dict: A Dict containing all youtube link name and urls
         """
         bookmarks_names_urls: dict = {}
         key = 0
-        ## build a formatted dictionary of song urls and names
         try:
             with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
@@ -110,7 +112,21 @@ class PlayList:
                         key += 1
         except FileNotFoundError as e:
             self.logger.error(f"exception encountered when opening bookmark file and parsing the bookmarks: {e}")
-        ## convert dict to dataframe
+        return bookmarks_names_urls
+
+    def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
+        """Reads YouTube song links from a Chrome bookmarks file in dataframe
+
+        Args:
+            bookmark_file_name (str): Path to the bookmarks file.
+
+        Returns:
+            pd.DataFrame: DataFrame containing song names and URLs.
+        """
+
+        # build a formatted dictionary of song urls and names
+        bookmarks_names_urls = self._read_youtube_links(bookmark_file_name)
+        # convert dict to dataframe
         self.songs = pd.DataFrame.from_dict(
             bookmarks_names_urls,
             orient="index",
@@ -232,22 +248,58 @@ def execute_random_song_selection():
     Returns:
         None
     """
+
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
     configs: json = read_config_file()
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
+    # read cli arguments
+    parser = argparse.ArgumentParser(description="Example program")
+    # Add arguments
+    parser.add_argument(
+        "-write_to_xlsx",
+        "--wx",
+        type=str,
+        nargs='?',
+        help="xlsx file name to write to",
+        default="write_playlist.xlsx"
+    )
+    parser.add_argument(
+        "-write_to_csv",
+        "--wc",
+        type=str,
+        nargs='?',
+        help="csv file name to write to",
+        default="write_playlist.csv"
+    )
+    parser.add_argument(
+        "-rb",
+        "--read_from_bookmarks",
+        type=str,
+        nargs='?',
+        default=configs["bookmarks"],
+        help='bookmarks file name to read from'
+    )
+    parser.add_argument(
+        "-rc",
+        "--read_from_csv",
+        type=str,
+        nargs='?',
+        default=configs["csv_file_name"],
+        help='csv file name to read from'
+    )
+    args = parser.parse_args()
     my_playlist = PlayList(chrome_browser, logger)
-    # save this for later!
-    songs: pd.DataFrame = my_playlist.read_from_bookmarks(configs["bookmarks"])
-    # songs = my_playlist.read_from_excel(configs["xlsx_file_name"])
-    # print(songs)
-    # csv_file_name = configs["csv_file_name"]
-    # songs = read_from_csv(csv_file_name)
-    songs.to_excel(configs["xlsx_file_name"], index_label="Index")
-    # song_list = dict(songs.values.tolist())
-    # save this for later
-    # write_to_csv(csv_file_name, songs)
-    my_playlist.play_random()
+    if args.read_from_bookmarks:
+        songs: pd.DataFrame = my_playlist.read_from_bookmarks(args.read_from_bookmarks)
+    # if args.read_from_csv:
+    #    songs = my_playlist.read_from_csv(args.read_from_csv)
+    if songs:
+        if args.write_to_xlsx:
+            songs.to_excel(configs["xlsx_file_name"], index_label="Index")
+        # if args.write_to_csv:
+        #     my_playlist.write_to_csv(args.write_to_csv, songs)
+        my_playlist.play_random()
 
 
 if __name__ == '__main__':
