@@ -72,6 +72,23 @@ class PlayList:
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
 
+    def _split_a_href(self, html_line: str) -> [str, str]:
+        """Removes the link name and link url from a line of html containing an "a href"
+
+        Args:
+            html_line (str): Line of html
+
+        Returns:
+            List of two strings representing the name and then the url
+        """
+        url_start_loc: int = html_line.find('A HREF="') + 8
+        url_end_loc: int = html_line.find('"', url_start_loc + 1)
+        url: str = html_line[url_start_loc:url_end_loc]
+        name_start_loc: int = html_line.find('">', url_end_loc) + 2
+        name_end_loc: int = html_line.find('</A>', name_start_loc)
+        name: str = html_line[name_start_loc:name_end_loc]
+        return [name, url]
+
     def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
         """Reads YouTube song links from a Chrome bookmarks file.
 
@@ -82,29 +99,20 @@ class PlayList:
             pd.DataFrame: DataFrame containing song names and URLs.
         """
         bookmarks_names_urls: dict = {}
+        key = 0
+        ## build a formatted dictionary of song urls and names
         try:
             with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
-                    if linecount != 0 and 'youtube' in line:
-                        if '<DT>' in line:
-                            url_start_loc: int = line.find('A HREF="') + 8
-                            url_end_loc: int = line.find('"', url_start_loc + 1)
-                            url: str = line[url_start_loc:url_end_loc]
-                            name_start_loc: int = line.find('">', url_end_loc) + 2
-                            name_end_loc: int = line.find('</A>', name_start_loc)
-                            name: str = line[name_start_loc:name_end_loc]
-                            bookmarks_names_urls.update({name: url})
+                    if linecount != 0 and 'youtube' in line and '<DT>' in line:
+                        name, url = self._split_a_href(line)
+                        bookmarks_names_urls.update({key: (name, url)})
+                        key += 1
         except FileNotFoundError as e:
             self.logger.error(f"exception encountered when opening bookmark file and parsing the bookmarks: {e}")
-        formatted_song_info: dict = {
-            song_key: song_value
-            for song_key, song_value
-            in enumerate(
-                bookmarks_names_urls.items()
-            )
-        }
+        ## convert dict to dataframe
         self.songs = pd.DataFrame.from_dict(
-            formatted_song_info,
+            bookmarks_names_urls,
             orient="index",
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
