@@ -44,13 +44,14 @@ class Browser:
             self.browser_logger.info(f"issue opening web browser with this url: {e}")
 
 
-def check_file_type(file_name: str, file_exts: list[str]):
+def check_file_type(file_name: str, file_exts: list[str]) -> bool:
     _, ext = os.path.splitext(file_name)
     if ext.lower() not in file_exts:
         if len(file_exts) == 1:
             raise ValueError(f"Invalid file type: {ext}. Allowed type is {file_exts}")
         else:
             raise ValueError(f"Invalid file type: {ext}. Allowed types are {file_exts}")
+    return True
 
 
 class PlayList:
@@ -160,31 +161,39 @@ class PlayList:
             dataframe: A dataframe containing all of the song data from the file.
         """
         check_file_type(song_file_name, ['.csv'])
-        self.songs = pd.read_csv(
-            song_file_name,
-            header=0,
-            names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
-        )
-        self.logger.info(f"loaded {len(self.songs)} songs into the song list")
+        try:
+            self.songs = pd.read_csv(
+                song_file_name,
+                header=0,
+                names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
+            )
+            self.logger.info(f"loaded {len(self.songs)} songs into the song list")
+        except FileNotFoundError:
+            self.logger.error(f"file {song_file_name} does not exist to load.")
+            exit(1)
         return self.songs
 
-    def play_random(self) -> None:
+    def play_random(self) -> bool:
         """Plays a random song from the playlist's song list.
 
         Args:
             No parameters
 
         Returns:
-            None.
+            bool: True for success.
         """
         songlist_item_url = ''
         try:
             (songlist_item_name,
-             songlist_item_url) = random.choice(self.songs.values.tolist())
+             songlist_item_url) = random.choice(
+                self.songs.values.tolist()
+            )
             self.logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
         except TypeError as e:
             self.logger.error(f"error opening songs to make a random choice: {e}")
+            exit(1)
         self.browser.open_browser_with_url(songlist_item_url)
+        return True
 
 
 def read_config_file(config_file_name: str = "./config.json") -> json:
@@ -218,7 +227,6 @@ def execute_random_song_selection():
     # good config.json will have all elements in config_template.json
     # except just the file type used will need a good value
     configs: json = read_config_file()
-    print(configs["chrome_path"])
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
     my_playlist = PlayList(chrome_browser, logger)
     # save this for later!
