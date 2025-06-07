@@ -10,9 +10,12 @@ Problem to solve: I have a collection of YouTube bookmarks not in a playlist on 
 ## Important disclaimer
 
 THIS CODE IS STILL TERRIBLE.  
-Was: * I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.*
-Now: One thing I like to do is take ancient, horrible code of mine and refactor it-- use it as a playground for improvements
+Was: *I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.*
+
+Now: **One thing I like to do is take ancient, horrible code of mine and refactor it-- use it as a playground for improvements**
+
 I am testing out ideas about coding practices here as I clean up some truly awful rushed coding.
+
 Not everything has to be a glamorous project to demonstrate the power of refactoring :)
 
 ** Look at the start of process here **
