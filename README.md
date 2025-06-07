@@ -18,7 +18,7 @@ I am testing out ideas about coding practices here as I clean up some truly awfu
 
 Not everything has to be a glamorous project to demonstrate the power of refactoring :)
 
-** Look at the start of process here **
+**Look at the start of process here**
 What I do at work is a lot more complex, but I was very quickly able to assemble:
 * a primitive CI/CD process with 
     * Git Hooks instantiated through pre-commit
