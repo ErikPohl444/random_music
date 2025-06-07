@@ -63,8 +63,27 @@ pip install -r requirements.txt
 
 ## Running the tests
 
-I will explain how to test the system here using the automated tests.
+Yes, if the tests in /tests are written for pytest, the instructions should use pytest instead of unittest. Here’s a revised "Running the Tests" section for your README.md:
 
+```markdown
+## Running the Tests
+
+This assumes you've already installed the code and the requirements in requirements.txt.
+
+To run the tests for this project, follow these steps:
+
+  Run all tests in the `/tests` folder using pytest:
+
+   ```bash
+   pytest tests/
+   ```
+
+   Or, to run a specific test file:
+
+   ```bash
+   pytest tests/test_main.py
+   ```
+   
 ## Contributing
 
 For now, I'd be excited to receive pull requests.  I don't have rules for contributing right now.
