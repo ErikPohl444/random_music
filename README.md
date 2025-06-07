@@ -5,14 +5,15 @@ Problem to solve: I have a collection of YouTube bookmarks not in a playlist on 
 **Note**: In this repo, I tested both pre-commit for git and GitHub actions using Yaml and confirmed both executed flake8 for linting.  I like both, but Actions is more foolproof.
 ## Future plans
 
-- [ ] Move future plans to issues
-- [ ] Lint and refactor code
-- [ ] Complete empty functionality and expand
+- [x] See issues in GitHub
  
 ## Important disclaimer
 
-THIS CODE IS TERRIBLE.  
-I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.
+THIS CODE IS STILL TERRIBLE.  
+Was: * I wrote it a long time ago and just now got around to adding it to a repo.  It was throwaway, and I'm now setting a goal to make it not throwaway.*
+Now: One thing I like to do is take ancient, horrible code of mine and refactor it-- use it as a playground for improvements
+I am testing out ideas about coding practices here as I clean up some truly awful rushed coding.
+Not everything has to be a glamorous project to demonstrate the power of refactoring :)
 
 ** Look at the start of process here **
 What I do at work is a lot more complex, but I was very quickly able to assemble:
