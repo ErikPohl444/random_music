@@ -238,7 +238,15 @@ def read_config_file(config_file_name: str = "./config.json") -> json:
         logger.info(f'configuration file not found at {config_file_name} producing error {e}')
     return loaded_configs
 
-def get_args(configs):
+def get_args(configs: json):
+    """Set up arg parser with arguments and return parsed values.
+
+    Args:
+        No parameters
+
+    Returns:
+        None
+    """
     parser = argparse.ArgumentParser(description="Example program")
     # Add arguments
     parser.add_argument(
