@@ -1,4 +1,4 @@
-(Jukebox)[![Dscn2823-Wurlitzer-3500-Zodiac-On.jpg](Dscn2823-Wurlitzer-3500-Zodiac-On.jpg)]
+[Jukebox](Dscn2823-Wurlitzer-3500-Zodiac-On.jpg](Dscn2823-Wurlitzer-3500-Zodiac-On.jpg)
 
 # random_music
 
