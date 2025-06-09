@@ -1,3 +1,5 @@
+(Jukebox)[![Dscn2823-Wurlitzer-3500-Zodiac-On.jpg](Dscn2823-Wurlitzer-3500-Zodiac-On.jpg)]
+
 # random_music
 
 Problem to solve: I have a collection of YouTube bookmarks not in a playlist on any application.  I want to be surprised by a randomized music selection, selected from my bookmarks.
