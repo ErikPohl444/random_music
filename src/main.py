@@ -39,7 +39,7 @@ class Browser:
         Returns:
             None
         """
-        print(self.browser_executable_path, url)
+        self.browser_logger.logger.(self.browser_executable_path, url)
         try:
             webbrowser.get(self.browser_executable_path).open(url, 2)
         except webbrowser.Error as e:
