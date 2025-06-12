@@ -247,40 +247,47 @@ def get_args(configs: dict):
     Returns:
         parsed arguments
     """
-    parser = argparse.ArgumentParser(description="Example program")
-    # Add arguments
-    parser.add_argument(
-        "-write_to_xlsx",
-        "--wx",
-        type=str,
-        nargs='?',
-        help="xlsx file name to write to",
-        default="write_playlist.xlsx"
-    )
-    parser.add_argument(
-        "-write_to_csv",
-        "--wc",
-        type=str,
-        nargs='?',
-        help="csv file name to write to",
-        default="write_playlist.csv"
-    )
-    parser.add_argument(
-        "-rb",
-        "--read_from_bookmarks",
-        type=str,
-        nargs='?',
-        default=configs["bookmarks"],
-        help='bookmarks file name to read from'
-    )
-    parser.add_argument(
-        "-rc",
-        "--read_from_csv",
-        type=str,
-        nargs='?',
-        default=configs["csv_file_name"],
-        help='csv file name to read from'
-    )
+    parser = argparse.ArgumentParser(description="Random music")
+    arg_specs = [
+        {
+            "flags": ["-write_to_xlsx", "--wx"],
+            "kwargs": {
+                "type": str,
+                "nargs": '?',
+                "help": "xlsx file name to write to",
+                "default": configs.get("xlsx_file_name", "write_playlist.xlsx"),
+            }
+        },
+        {
+            "flags": ["-write_to_csv", "--wc"],
+            "kwargs": {
+                "type": str,
+                "nargs": '?',
+                "help": "csv file name to write to",
+                "default": configs.get("csv_file_name", "write_playlist.csv"),
+            }
+        },
+        {
+            "flags": ["-rb", "--read_from_bookmarks"],
+            "kwargs": {
+                "type": str,
+                "nargs": '?',
+                "help": 'bookmarks file name to read from',
+                "default": configs.get("bookmarks", "default_bookmarks.html"),
+            }
+        },
+        {
+            "flags": ["-rc", "--read_from_csv"],
+            "kwargs": {
+                "type": str,
+                "nargs": '?',
+                "help": 'csv file name to read from',
+                "default": configs.get("csv_file_name", "default_playlist.csv"),
+            }
+        }
+    ]
+    for spec in arg_specs:
+        parser.add_argument(*spec["flags"], **spec["kwargs"])
     return parser.parse_args()
 
 def execute_random_song_selection():
