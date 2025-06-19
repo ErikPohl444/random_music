@@ -6,6 +6,8 @@ import setup_logging
 import os
 from setup_logging import logger
 import argparse
+import sqlite3
+
 
 
 # Using standardized comments here even though the code is self documenting
@@ -17,6 +19,11 @@ import argparse
 # i approached python first with lybl from other language, moved to a kind of extreme eafp, and
 # am playing here and in future scripting changes to find a good balance.
 
+
+def get_db_connection(db_path='./data/mydb.sqlite'):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row  # Optional, for dict-like row access
+    return conn
 
 class Browser:
     """Provides an interface for calling browsers by their executable to open a URL window .
@@ -306,6 +313,8 @@ def execute_random_song_selection():
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
     # read cli arguments
     args = get_args(configs)
+    db_conn = get_db_connection()
+
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
         songs: pd.DataFrame = my_playlist.read_from_bookmarks(args.read_from_bookmarks)
@@ -317,6 +326,7 @@ def execute_random_song_selection():
         # if args.write_to_csv:
         #     my_playlist.write_to_csv(args.write_to_csv, songs)
         my_playlist.play_random()
+    db_conn.close()
 
 
 if __name__ == '__main__':
