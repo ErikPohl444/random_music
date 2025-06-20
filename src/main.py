@@ -9,7 +9,6 @@ import argparse
 import sqlite3
 
 
-
 # Using standardized comments here even though the code is self documenting
 # 1. to show what it looks like [I can always reduce comments later]
 # 2. evaluate the maintenance requirements
@@ -20,10 +19,11 @@ import sqlite3
 # am playing here and in future scripting changes to find a good balance.
 
 
-def get_db_connection(db_path='./data/mydb.sqlite'):
+def get_db_connection(db_path: str) -> sqlite3.connect:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row  # Optional, for dict-like row access
     return conn
+
 
 class Browser:
     """Provides an interface for calling browsers by their executable to open a URL window .
@@ -213,7 +213,6 @@ class PlayList:
         Returns:
             bool: True for success.
         """
-        songlist_item_url = ''
         try:
             (songlist_item_name,
              songlist_item_url) = random.choice(
@@ -244,6 +243,7 @@ def read_config_file(config_file_name: str = "./config.json") -> json:
     except FileNotFoundError as e:
         logger.info(f'configuration file not found at {config_file_name} producing error {e}')
     return loaded_configs
+
 
 def get_args(configs: dict):
     """Set up arg parser with arguments and return parsed values.
@@ -297,6 +297,7 @@ def get_args(configs: dict):
         parser.add_argument(*spec["flags"], **spec["kwargs"])
     return parser.parse_args()
 
+
 def execute_random_song_selection():
     """Reads configurations and, based on the configurations, loads a list of song data, selecting one to play.
 
@@ -313,7 +314,8 @@ def execute_random_song_selection():
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
     # read cli arguments
     args = get_args(configs)
-    db_conn = get_db_connection()
+    # get db connection
+    db_conn = get_db_connection(configs["db_path"])
 
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
