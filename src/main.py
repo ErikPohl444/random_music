@@ -23,7 +23,7 @@ def get_db_connection(db_path: str) -> sqlite3.connect:
     """opens a sqlite3 connection.
 
     Args:
-        str: db_path: path to database
+        db_path: str: path to database
 
     Returns:
         bool: connection.
