@@ -20,6 +20,14 @@ import sqlite3
 
 
 def get_db_connection(db_path: str) -> sqlite3.connect:
+    """opens a sqlite3 connection.
+
+    Args:
+        str: db_path: path to database
+
+    Returns:
+        bool: connection.
+    """
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row  # Optional, for dict-like row access
     return conn
