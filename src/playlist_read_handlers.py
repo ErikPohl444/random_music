@@ -2,6 +2,7 @@ import os
 from abc import ABC, abstractmethod
 from setup_logging import logger
 import pandas as pd
+from playlist_shared_utils import check_file_type
 
 
 class ReadHandler(ABC):
@@ -13,14 +14,7 @@ class ReadHandler(ABC):
         pass
 
 
-def check_file_type(file_name: str, file_exts: list[str]) -> bool:
-    _, ext = os.path.splitext(file_name)
-    if ext.lower() not in file_exts:
-        if len(file_exts) == 1:
-            raise ValueError(f"Invalid file type: {ext}. Allowed type is {file_exts}")
-        else:
-            raise ValueError(f"Invalid file type: {ext}. Allowed types are {file_exts}")
-    return True
+
 
 
 class ReadBookmarksHandler(ReadHandler):
