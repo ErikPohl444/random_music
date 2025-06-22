@@ -1,6 +1,4 @@
-import webbrowser
 import pandas as pd
-import random
 import json
 import os
 import setup_logging
@@ -9,6 +7,8 @@ import argparse
 import sqlite3
 from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadCSVHandler
 from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler
+from Browser import Browser
+from Playlist import PlayList
 
 # i went class happy here.  kinda demonstrates how even clean coding using a design pattern can contribute
 # to difficulty reading code.  glad to denormalize it at some point in the future, but will leave as-is for now.
@@ -37,34 +37,6 @@ def get_db_connection(db_path: str) -> sqlite3.connect:
     return conn
 
 
-class Browser:
-    """Provides an interface for calling browsers by their executable to open a URL window .
-
-    Attributes:
-        browser_executable_path (str): Path to the browser executable.
-        browser_logger (Logger): Logger instance for logging events.
-    """
-
-    def __init__(self, browser_executable_path: str, browser_logger: logger):
-        self.browser_executable_path = browser_executable_path
-        self.browser_logger = browser_logger
-
-    def open_browser_with_url(self, url: str):
-        """Opens the browser to load the given URL.
-
-        Args:
-            url (str): The url to open using the browser.
-
-        Returns:
-            None
-        """
-        self.browser_logger.info(self.browser_executable_path, url)
-        try:
-            webbrowser.get(self.browser_executable_path).open(url, 2)
-        except webbrowser.Error as e:
-            self.browser_logger.info(f"issue opening web browser with this url: {e}")
-
-
 def check_file_type(file_name: str, file_exts: list[str]) -> bool:
     _, ext = os.path.splitext(file_name)
     if ext.lower() not in file_exts:
@@ -73,53 +45,6 @@ def check_file_type(file_name: str, file_exts: list[str]) -> bool:
         else:
             raise ValueError(f"Invalid file type: {ext}. Allowed types are {file_exts}")
     return True
-
-
-class PlayList:
-    """Handles playlist operations for random music selection.
-
-    Attributes:
-        songs (dataframe): List of songs in a playlist.
-        browser (Browser): Browser instance for opening songs.
-        logger (Logger): Logger instance for logging events.
-        SONG_NAME_COLUMN (str): Name of the song column.
-        SONG_URL_COLUMN (str): Name of the URL column.
-    """
-
-    def __init__(self, browser: Browser, playlist_logger: setup_logging.logger):
-        self.songs = pd.DataFrame()
-        self.browser = browser
-        self.logger = playlist_logger
-        self.SONG_NAME_COLUMN = 'Song_Name'
-        self.SONG_URL_COLUMN = 'Song_URL'
-        self.read_songlist_handler = None
-        self.write_songlist_handler = None
-
-    def read_songs(self, source: str):
-        if self.read_songlist_handler:
-            self.songs = self.read_songlist_handler.get_songlist(source)
-        return self.songs
-
-    def play_random(self) -> bool:
-        """Plays a random song from the playlist's song list.
-
-        Args:
-            No parameters
-
-        Returns:
-            bool: True for success.
-        """
-        try:
-            (songlist_item_name,
-             songlist_item_url) = random.choice(
-                self.songs.values.tolist()
-            )
-            self.logger.info(f"opening {songlist_item_name} using {songlist_item_url}")
-        except TypeError as e:
-            self.logger.error(f"error opening songs to make a random choice: {e}")
-            exit(1)
-        self.browser.open_browser_with_url(songlist_item_url)
-        return True
 
 
 def read_config_file(config_file_name: str = "./config.json") -> json:
