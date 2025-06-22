@@ -75,6 +75,8 @@ def check_file_type(file_name: str, file_exts: list[str]) -> bool:
 
 
 class ReadHandler(ABC):
+    SONG_NAME_COLUMN = 'Song_Name'
+    SONG_URL_COLUMN = 'Song_URL'
 
     @abstractmethod
     def get_songlist(self, source: str):
@@ -84,8 +86,6 @@ class ReadHandler(ABC):
 class ReadBookmarksHandler(ReadHandler):
 
     def __init__(self, read_logger):
-        self.SONG_NAME_COLUMN = 'Song_Name'
-        self.SONG_URL_COLUMN = 'Song_URL'
         self.logger = read_logger
 
     @staticmethod
@@ -157,8 +157,6 @@ class ReadBookmarksHandler(ReadHandler):
 class ReadCSVHandler(ReadHandler):
 
     def __init__(self, read_logger):
-        self.SONG_NAME_COLUMN = 'Song_Name'
-        self.SONG_URL_COLUMN = 'Song_URL'
         self.logger = read_logger
 
     def get_songlist(self, source: str) -> pd.DataFrame:
@@ -187,8 +185,6 @@ class ReadCSVHandler(ReadHandler):
 class ReadExcelHandler(ReadHandler):
 
     def __init__(self, read_logger):
-        self.SONG_NAME_COLUMN = 'Song_Name'
-        self.SONG_URL_COLUMN = 'Song_URL'
         self.logger = read_logger
 
     def get_songlist(self, source: str) -> pd.DataFrame:
@@ -210,6 +206,8 @@ class ReadExcelHandler(ReadHandler):
 
 
 class WriteHandler(ABC):
+    SONG_NAME_COLUMN = 'Song_Name'
+    SONG_URL_COLUMN = 'Song_URL'
 
     @abstractmethod
     def write_songlist(self, songs, destination: str):
@@ -226,7 +224,7 @@ class ExcelWriteHandler(WriteHandler):
 class CSVWriteHandler(WriteHandler):
 
     @staticmethod
-    def write_songlist(songs, destination: str, song_name_column, song_url_column):
+    def write_songlist(songs, destination: str):
         """Write a playlist to a csv file.
 
                 Args:
@@ -241,7 +239,7 @@ class CSVWriteHandler(WriteHandler):
         check_file_type(destination, ['.csv'])
         songs.to_csv(
             destination,
-            columns=[song_name_column, song_url_column],
+            columns=[CSVWriteHandler.song_name_column, CSVWriteHandler.song_url_column],
             index_label="Index"
         )
         logger.info(
@@ -392,16 +390,16 @@ def execute_random_song_selection():
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
         my_playlist.read_songlist_handler = ReadBookmarksHandler(logger)
-        songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
     # if args.read_from_csv:
-    #    songs = my_playlist.read_from_csv(args.read_from_csv)
+    #     my_playlist.read_songlist_handler = ReadCSVHandler(logger)
+    songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
     if songs.bool:
         if args.wx:
             my_playlist.write_songlist_handler = ExcelWriteHandler
-            logger.info(songs, configs["xlsx_file_name"])
             my_playlist.write_songlist_handler.write_songlist(songs, configs["xlsx_file_name"])
-        # if args.write_to_csv:
-        #     my_playlist.write_to_csv(args.write_to_csv, songs)
+        # if args.wc:
+        #     my_playlist.write_songlist_handler = CSVWriteHandler
+        #     my_playlist.write_songlist_handler.write_songlist(songs, configs["csv_file_name"])
         my_playlist.play_random()
     db_conn.close()
 
