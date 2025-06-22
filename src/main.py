@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-import os
 import setup_logging
 from setup_logging import logger
 import argparse
@@ -9,6 +8,7 @@ from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadC
 from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler
 from Browser import Browser
 from Playlist import PlayList
+from playlist_shared_utils import check_file_type
 
 # i went class happy here.  kinda demonstrates how even clean coding using a design pattern can contribute
 # to difficulty reading code.  glad to denormalize it at some point in the future, but will leave as-is for now.
@@ -35,16 +35,6 @@ def get_db_connection(db_path: str) -> sqlite3.connect:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row  # Optional, for dict-like row access
     return conn
-
-
-def check_file_type(file_name: str, file_exts: list[str]) -> bool:
-    _, ext = os.path.splitext(file_name)
-    if ext.lower() not in file_exts:
-        if len(file_exts) == 1:
-            raise ValueError(f"Invalid file type: {ext}. Allowed type is {file_exts}")
-        else:
-            raise ValueError(f"Invalid file type: {ext}. Allowed types are {file_exts}")
-    return True
 
 
 def read_config_file(config_file_name: str = "./config.json") -> json:
