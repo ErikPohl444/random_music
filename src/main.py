@@ -152,6 +152,36 @@ class ReadBookmarksHandler(ReadHandler):
         return songs
 
 
+class ReadCSVHandler(ReadHandler):
+
+    def __init__(self, read_logger):
+        self.SONG_NAME_COLUMN = 'Song_Name'
+        self.SONG_URL_COLUMN = 'Song_URL'
+        self.logger = read_logger
+
+    def get_songlist(self, source: str) -> pd.DataFrame:
+        """Reads a song data into a playlist from a csv file.
+
+        Args:
+            source (str): The name of the song data file. song_file_name
+
+        Returns:
+            dataframe: A dataframe containing all of the song data from the file.
+        """
+        check_file_type(source, ['.csv'])
+        try:
+            songs = pd.read_csv(
+                source,
+                header=0,
+                names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
+            )
+            self.logger.info(f"loaded {len(songs)} songs into the song list")
+        except FileNotFoundError:
+            self.logger.error(f"file {source} does not exist to load.")
+            exit(1)
+        return songs
+
+
 class WriteHandler(ABC):
 
     @abstractmethod
@@ -227,28 +257,6 @@ class PlayList:
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         self.logger.info(f"loaded {len(self.songs)} songs into the song list")
-        return self.songs
-
-    def read_from_csv(self, song_file_name: str) -> pd.DataFrame:
-        """Reads a song data into a playlist from a csv file.
-
-        Args:
-            song_file_name (str): The name of the song data file.
-
-        Returns:
-            dataframe: A dataframe containing all of the song data from the file.
-        """
-        check_file_type(song_file_name, ['.csv'])
-        try:
-            self.songs = pd.read_csv(
-                song_file_name,
-                header=0,
-                names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
-            )
-            self.logger.info(f"loaded {len(self.songs)} songs into the song list")
-        except FileNotFoundError:
-            self.logger.error(f"file {song_file_name} does not exist to load.")
-            exit(1)
         return self.songs
 
     def play_random(self) -> bool:
