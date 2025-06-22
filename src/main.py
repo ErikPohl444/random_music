@@ -9,6 +9,8 @@ from abc import ABC, abstractmethod
 import argparse
 import sqlite3
 
+# i went class happy here.  kinda demonstrates how even clean coding using a design pattern can contribute
+# to difficulty reading code.  glad to denormalize it at some point in the future, but will leave as-is for now.
 
 # Using standardized comments here even though the code is self documenting
 # 1. to show what it looks like [I can always reduce comments later]
