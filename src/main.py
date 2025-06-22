@@ -182,6 +182,31 @@ class ReadCSVHandler(ReadHandler):
         return songs
 
 
+class ReadExcelHandler(ReadHandler):
+
+    def __init__(self, read_logger):
+        self.SONG_NAME_COLUMN = 'Song_Name'
+        self.SONG_URL_COLUMN = 'Song_URL'
+        self.logger = read_logger
+
+    def get_songlist(self, source: str) -> pd.DataFrame:
+        """Reads a song data into a playlist.
+
+        Args:
+            source (str): The name of the song data file. song_file_name
+
+        Returns:
+            dataframe: A dataframe containing all of the song data from the file.
+        """
+        check_file_type(source, ['.xlsx'])
+        songs = pd.read_excel(
+            source,
+            usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
+        )
+        self.read_logger.info(f"loaded {len(songs)} songs into the song list")
+        return songs
+
+
 class WriteHandler(ABC):
 
     @abstractmethod
@@ -241,23 +266,6 @@ class PlayList:
             f"from song list into {song_file_name}"
         )
         return True
-
-    def read_from_excel(self, song_file_name: str) -> pd.DataFrame:
-        """Reads a song data into a playlist.
-
-        Args:
-            song_file_name (str): The name of the song data file.
-
-        Returns:
-            dataframe: A dataframe containing all of the song data from the file.
-        """
-        check_file_type(song_file_name, ['.xlsx'])
-        self.songs = pd.read_excel(
-            song_file_name,
-            usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
-        )
-        self.logger.info(f"loaded {len(self.songs)} songs into the song list")
-        return self.songs
 
     def play_random(self) -> bool:
         """Plays a random song from the playlist's song list.
