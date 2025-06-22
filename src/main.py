@@ -5,6 +5,7 @@ import json
 import setup_logging
 import os
 from setup_logging import logger
+from abc import ABC, abstractmethod
 import argparse
 import sqlite3
 
@@ -71,23 +72,19 @@ def check_file_type(file_name: str, file_exts: list[str]) -> bool:
     return True
 
 
-class PlayList:
-    """Handles playlist operations for random music selection.
+class ReadHandler(ABC):
 
-    Attributes:
-        songs (dataframe): List of songs in a playlist.
-        browser (Browser): Browser instance for opening songs.
-        logger (Logger): Logger instance for logging events.
-        SONG_NAME_COLUMN (str): Name of the song column.
-        SONG_URL_COLUMN (str): Name of the URL column.
-    """
+    @abstractmethod
+    def get_songlist(self, source: str):
+        pass
 
-    def __init__(self, browser: Browser, playlist_logger: setup_logging.logger):
-        self.songs = pd.DataFrame()
-        self.browser = browser
-        self.logger = playlist_logger
+
+class ReadBookmarksHandler(ReadHandler):
+
+    def __init__(self, read_logger):
         self.SONG_NAME_COLUMN = 'Song_Name'
         self.SONG_URL_COLUMN = 'Song_URL'
+        self.logger = read_logger
 
     @staticmethod
     def _split_a_href(html_line: str) -> [str, str]:
@@ -129,27 +126,61 @@ class PlayList:
             self.logger.error(f"exception encountered when opening bookmark file and parsing the bookmarks: {e}")
         return bookmarks_names_urls
 
-    def read_from_bookmarks(self, bookmark_file_name: str) -> pd.DataFrame:
+    def get_songlist(self, source: str) -> pd.DataFrame:
         """Reads YouTube song links from a Chrome bookmarks file in dataframe
 
         Args:
-            bookmark_file_name (str): Path to the bookmarks file.
+            source (str): Path to the bookmarks file, bookmark_file_name
 
         Returns:
             pd.DataFrame: DataFrame containing song names and URLs.
         """
 
         # build a formatted dictionary of song urls and names
-        bookmarks_names_urls = self._read_youtube_links(bookmark_file_name)
+        logger.info('in bookmark read songlist')
+        bookmarks_names_urls = self._read_youtube_links(source)
+
         # convert dict to dataframe
-        self.songs = pd.DataFrame.from_dict(
+        songs = pd.DataFrame.from_dict(
             bookmarks_names_urls,
             orient="index",
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         self.logger.info(
-            f"loaded {len(self.songs)} songs into a song list"
+            f"loaded {len(songs)} songs into a song list"
         )
+        return songs
+
+
+class WriteHandler(ABC):
+
+    @abstractmethod
+    def write_songlist(self, destination: str):
+        pass
+
+
+class PlayList:
+    """Handles playlist operations for random music selection.
+
+    Attributes:
+        songs (dataframe): List of songs in a playlist.
+        browser (Browser): Browser instance for opening songs.
+        logger (Logger): Logger instance for logging events.
+        SONG_NAME_COLUMN (str): Name of the song column.
+        SONG_URL_COLUMN (str): Name of the URL column.
+    """
+
+    def __init__(self, browser: Browser, playlist_logger: setup_logging.logger):
+        self.songs = pd.DataFrame()
+        self.browser = browser
+        self.logger = playlist_logger
+        self.SONG_NAME_COLUMN = 'Song_Name'
+        self.SONG_URL_COLUMN = 'Song_URL'
+        self.read_songlist_handler = None
+
+    def read_songs(self, source: str):
+        if self.read_songlist_handler:
+            self.songs = self.read_songlist_handler.get_songlist(source)
         return self.songs
 
     def write_to_csv(self, song_file_name: str) -> bool:
@@ -327,7 +358,9 @@ def execute_random_song_selection():
 
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
-        songs: pd.DataFrame = my_playlist.read_from_bookmarks(args.read_from_bookmarks)
+        my_playlist.read_songlist_handler = ReadBookmarksHandler(logger)
+        songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
+        # songs: pd.DataFrame = my_playlist.read_songlist_handler.get_songlist(args.read_from_bookmarks)
     # if args.read_from_csv:
     #    songs = my_playlist.read_from_csv(args.read_from_csv)
     if songs.bool:
