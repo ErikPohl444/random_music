@@ -221,6 +221,34 @@ class ExcelWriteHandler(WriteHandler):
         songs.to_excel(destination, index_label="Index")
 
 
+class CSVWriteHandler(WriteHandler):
+
+    @staticmethod
+    def write_songlist(songs, destination: str, song_name_column, song_url_column):
+        """Write a playlist to a csv file.
+
+                Args:
+                    songs (str):songs to write to excel
+                    destination (str): The name of the song data file.song_file_name
+                    song_name_column (str): column header for song name
+                    song_url_column (str): column header for song url
+
+                Returns:
+                    boolean: Success flag for the write operation.
+                """
+        check_file_type(destination, ['.csv'])
+        songs.to_csv(
+            destination,
+            columns=[song_name_column, song_url_column],
+            index_label="Index"
+        )
+        logger.info(
+            f"completed writing {len(songs)} songs "
+            f"from song list into {destination}"
+        )
+        return True
+
+
 class PlayList:
     """Handles playlist operations for random music selection.
 
@@ -245,27 +273,6 @@ class PlayList:
         if self.read_songlist_handler:
             self.songs = self.read_songlist_handler.get_songlist(source)
         return self.songs
-
-    def write_to_csv(self, song_file_name: str) -> bool:
-        """Write a playlist to a csv file.
-
-        Args:
-            song_file_name (str): The name of the song data file.
-
-        Returns:
-            boolean: Success flag for the write operation.
-        """
-        check_file_type(song_file_name, ['.csv'])
-        self.songs.to_csv(
-            song_file_name,
-            columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN],
-            index_label="Index"
-        )
-        self.logger.info(
-            f"completed writing {len(self.songs)} songs "
-            f"from song list into {song_file_name}"
-        )
-        return True
 
     def play_random(self) -> bool:
         """Plays a random song from the playlist's song list.
