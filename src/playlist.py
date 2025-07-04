@@ -1,9 +1,7 @@
 import random
-import setup_logging
+from src import setup_logging
 from Browser import Browser
 import pandas as pd
-from src.exceptions import ReadHandlerNotFoundError
-
 
 
 class PlayList:

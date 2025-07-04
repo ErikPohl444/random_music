@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from setup_logging import logger
+from src.setup_logging import logger
 from playlist_shared_utils import check_file_type
 
 
