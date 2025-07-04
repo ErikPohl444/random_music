@@ -42,6 +42,13 @@ class ReadHandler(ABC):
     SONG_NAME_COLUMN = 'Song_Name'
     SONG_URL_COLUMN = 'Song_URL'
 
+    def __init__(self, read_handler_logger: logger):
+        self.logger = read_handler_logger
+
+    def raise_and_log(self, logged_exception: Exception, exception_message: str):
+        self.logger.error(exception_message)
+        raise logged_exception(exception_message)
+
     @abstractmethod
     def get_songlist(self, source: str):
         pass
@@ -49,11 +56,7 @@ class ReadHandler(ABC):
 
 class ReadBookmarksHandler(ReadHandler):
 
-    def __init__(self, read_logger):
-        self.logger = read_logger
-
-    @staticmethod
-    def _split_a_href(html_line: str) -> [str, str]:
+    def _split_a_href(self, html_line: str) -> [str, str]:
         """Removes the link name and link url from a line of html containing an "a href"
 
         Args:
@@ -66,9 +69,11 @@ class ReadBookmarksHandler(ReadHandler):
         parser = MyHTMLParser()
         parser.feed(html_line)
         if not parser.last_link_text or not parser.last_url:
-            improved_exception = f"HTML LINE {html_line} doesn't contain enough information to divide into link and text"
-            raise PlaylistError(improved_exception)
-        return (parser.last_link_text, parser.last_url)
+            self.raise_and_log(
+                PlaylistError,
+                f"HTML LINE {html_line} doesn't contain enough information to divide into link and text"
+            )
+        return parser.last_link_text, parser.last_url
 
     def _interesting_html_line(self, html_line: str) -> bool:
         return 'youtube' in html_line and '<DT>' in html_line
@@ -92,9 +97,10 @@ class ReadBookmarksHandler(ReadHandler):
                             bookmarks_names_urls.update({songlist_index: self._split_a_href(line)})
                             songlist_index += 1
         except FileNotFoundError as e:
-            improved_message = f"Playlist file {bookmark_file_name} does not exist to load songs from: {e}"
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                FileNotFoundError,
+                f"Playlist file {bookmark_file_name} does not exist to load songs from: {e}"
+            )
         return bookmarks_names_urls
 
     def get_songlist(self, source: str) -> pd.DataFrame:
@@ -118,7 +124,7 @@ class ReadBookmarksHandler(ReadHandler):
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         if songs.empty:
-            raise EmptyPlaylistError
+            self.raise_and_log(EmptyPlaylistError, "There were no songs found in the playlist source")
         self.logger.info(
             f"loaded {len(songs)} songs into a song list"
         )
@@ -126,9 +132,6 @@ class ReadBookmarksHandler(ReadHandler):
 
 
 class ReadCSVHandler(ReadHandler):
-
-    def __init__(self, read_logger):
-        self.logger = read_logger
 
     def get_songlist(self, source: str) -> pd.DataFrame:
         """Reads a song data into a playlist from a csv file.
@@ -147,34 +150,28 @@ class ReadCSVHandler(ReadHandler):
                 names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
             )
         except FileNotFoundError:
-            improved_message = f"Playlist file {source} does not exist to load songs from."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(FileNotFoundError, f"Playlist file {source} does not exist to load songs from.")
         except pandas.errors.ParserError:
-            improved_message = f"Check the format of playlist file {source}.  It is not parsing as a csv."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                pandas.errors.ParserError,
+                f"Check the format of playlist file {source}.  It is not parsing as a csv.")
         except UnicodeDecodeError:
-            improved_message = f"Check the encoding of playlist file {source}.  It is not parsing as a UTF-8."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                UnicodeDecodeError,
+                f"Check the encoding of playlist file {source}.  It is not parsing as a UTF-8.")
         except ValueError:
-            improved_message = f"Check the headers and fields of playlist file {source}. " \
-                               f"One or more fields contains invalid values."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                ValueError,
+                f"Check the headers and fields of playlist file {source}. "
+                f"One or more fields contains invalid values."
+            )
         if songs.empty:
-            improved_message = f"Playlist file {source} contained no songs."
-            self.logger.error(improved_message)
-            raise EmptyPlaylistError(improved_message)
+            self.raise_and_log(EmptyPlaylistError, f"Playlist file {source} contained no songs.")
         self.logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
 
 
 class ReadExcelHandler(ReadHandler):
-
-    def __init__(self, read_logger):
-        self.logger = read_logger
 
     def get_songlist(self, source: str) -> pd.DataFrame:
         """Reads a song data into a playlist.
@@ -192,19 +189,17 @@ class ReadExcelHandler(ReadHandler):
                 usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
             )
         except FileNotFoundError:
-            improved_message = f"Playlist file {source} does not exist to load songs from."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(FileNotFoundError, f"Playlist file {source} does not exist to load songs from.")
         except pandas.errors.ParserError:
-            improved_message = f"Check the format of playlist file {source}.  It is not parsing as an excel."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                pandas.errors.ParserError,
+                f"Check the format of playlist file {source}.  It is not parsing as an excel.")
         except ValueError:
-            improved_message = f"Check the headers and fields of playlist file {source}. " \
-                               f"One or more fields contains invalid values."
-            self.logger.error(improved_message)
-            raise FileNotFoundError(improved_message)
+            self.raise_and_log(
+                ValueError,
+                f"Check the headers and fields of playlist file {source}. "
+                f"One or more fields contains invalid values.")
         if songs.empty:
-            raise EmptyPlaylistError
+            self.raise_and_log(EmptyPlaylistError, "Playlist source contains no songs")
         self.logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
