@@ -1,11 +1,39 @@
 from abc import ABC, abstractmethod
 
 import pandas.errors
+from html.parser import HTMLParser
 
 from setup_logging import logger
 import pandas as pd
 from playlist_shared_utils import check_file_type
 from src.exceptions import EmptyPlaylistError
+
+
+class MyHTMLParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_anchor = False
+        self.link_text = ""
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            self.in_anchor = True
+            self.link_text = ""
+            for name, value in attrs:
+                if name == "href":
+                    self.current_link = value
+
+    def handle_data(self, data):
+        if self.in_anchor:
+            self.link_text += data
+
+    def handle_endtag(self, tag):
+        if tag == "a" and self.in_anchor:
+            self.links.append({'href': self.current_link, 'text': self.link_text.strip()})
+            self.in_anchor = False
+            self.current_link = None
+            self.link_text = ""
 
 
 class ReadHandler(ABC):
@@ -33,13 +61,10 @@ class ReadBookmarksHandler(ReadHandler):
             List of two strings representing the name and then the url
         """
 
-        url_start_loc: int = html_line.find('A HREF="') + 8
-        url_end_loc: int = html_line.find('"', url_start_loc + 1)
-        url: str = html_line[url_start_loc:url_end_loc]
-        name_start_loc: int = html_line.find('">', url_end_loc) + 2
-        name_end_loc: int = html_line.find('</A>', name_start_loc)
-        name: str = html_line[name_start_loc:name_end_loc]
-        return [name, url]
+        parser = MyHTMLParser()
+        parser.feed(html_line)
+        link = parser.links[0]
+        return [link['text'], link['href']]
 
     def _read_youtube_links(self, bookmark_file_name: str) -> dict:
         """Reads a flat file containing a bookmarks export from Chrome and extracts the youtube links
