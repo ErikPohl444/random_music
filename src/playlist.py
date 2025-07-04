@@ -26,9 +26,9 @@ class PlayList:
         self.read_songlist_handler = None
         self.write_songlist_handler = None
 
-    def read_songs(self, source: str):
+    def read_songs(self):
         if self.read_songlist_handler:
-            self.songs = self.read_songlist_handler.get_songlist(source)
+            self.songs = self.read_songlist_handler.get_songlist(self.read_songlist_handler.read_file_name)
         else:
             raise ReadHandlerNotFoundError
         return self.songs

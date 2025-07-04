@@ -6,8 +6,9 @@ class ReadHandler(ABC):
     SONG_NAME_COLUMN = 'Song_Name'
     SONG_URL_COLUMN = 'Song_URL'
 
-    def __init__(self, read_handler_logger: logger):
+    def __init__(self, read_handler_logger: logger, source_file_name: str):
         self.logger = read_handler_logger
+        self.read_file_name = source_file_name
 
     def raise_and_log(self, logged_exception: Exception, exception_message: str):
         self.logger.error(exception_message)
