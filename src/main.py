@@ -1,13 +1,11 @@
 import pandas as pd
 import json
-import setup_logging
 from setup_logging import logger
 import argparse
 import sqlite3
-from src.readhandler import ReadHandler
-from src.readcsvhandler import ReadCSVHandler
-from src.readbookmarkshandler import ReadBookmarksHandler
-from src.readexcelhandler import ReadExcelHandler
+from src.read_handlers.readhandler import ReadHandler
+from src.read_handlers.readcsvhandler import ReadCSVHandler
+from src.read_handlers.readbookmarkshandler import ReadBookmarksHandler
 from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler, WriteHandler
 from Browser import Browser
 from playlist import PlayList
