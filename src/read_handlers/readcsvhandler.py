@@ -1,7 +1,7 @@
 import pandas as pd
 from src.exceptions import EmptyPlaylistError
 from src.read_handlers.readhandler import ReadHandler
-from playlist_shared_utils import check_file_type
+from src.playlist_shared_utils import check_file_type
 
 
 class ReadCSVHandler(ReadHandler):

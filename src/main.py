@@ -119,9 +119,9 @@ def select_read_songlist_handler(args: argparse.Namespace) -> ReadHandler:
         ReadHandler
     """
     if args.read_from_bookmarks:
-        return ReadBookmarksHandler(logger)
+        return ReadBookmarksHandler(logger, args.read_from_bookmarks)
     elif args.read_from_csv:
-        return ReadCSVHandler(logger)
+        return ReadCSVHandler(logger, None)
 
 
 def select_write_songlist_handler(args: argparse.Namespace, configs: dict) -> WriteHandler:
@@ -155,12 +155,11 @@ def execute_random_song_selection():
     db_conn = get_db_connection(configs["db_path"])
     my_playlist = PlayList(chrome_browser, logger)
     my_playlist.read_songlist_handler = select_read_songlist_handler(args)
-    if my_playlist.read_songlist_handler:
-        songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
-    if songs.bool:
+    my_playlist.read_songs()
+    if my_playlist.songs.bool:
         my_playlist.write_songlist_handler = select_write_songlist_handler(args, configs)
         if my_playlist.write_songlist_handler:
-            my_playlist.write_songlist_handler.write_songlist(songs)
+            my_playlist.write_songlist_handler.write_songlist(my_playlist.songs)
         my_playlist.play_random()
     db_conn.close()
 
