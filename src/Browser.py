@@ -1,5 +1,4 @@
-import setup_logging
-from setup_logging import logger
+from src.setup_logging import logger
 import webbrowser
 
 

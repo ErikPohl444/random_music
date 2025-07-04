@@ -1,7 +1,7 @@
 import pandas as pd
 from src.exceptions import EmptyPlaylistError, PlaylistError
 from src.read_handlers.readhandler import ReadHandler
-from setup_logging import logger
+from src.setup_logging import logger, raise_and_log
 from src.myhtmlparser import MyHTMLParser
 
 
@@ -20,7 +20,7 @@ class ReadBookmarksHandler(ReadHandler):
         parser = MyHTMLParser()
         parser.feed(html_line)
         if not parser.last_link_text or not parser.last_url:
-            self.raise_and_log(
+            raise_and_log(
                 PlaylistError,
                 f"HTML LINE {html_line} doesn't contain enough information to divide into link and text"
             )
@@ -48,7 +48,7 @@ class ReadBookmarksHandler(ReadHandler):
                             bookmarks_names_urls.update({songlist_index: self._split_a_href(line)})
                             songlist_index += 1
         except FileNotFoundError as e:
-            self.raise_and_log(
+            raise_and_log(
                 FileNotFoundError,
                 f"Playlist file {bookmark_file_name} does not exist to load songs from: {e}"
             )
@@ -75,7 +75,7 @@ class ReadBookmarksHandler(ReadHandler):
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
         if songs.empty:
-            self.raise_and_log(EmptyPlaylistError, "There were no songs found in the playlist source")
+            raise_and_log(EmptyPlaylistError, "There were no songs found in the playlist source")
         self.logger.info(
             f"loaded {len(songs)} songs into a song list"
         )

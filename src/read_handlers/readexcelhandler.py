@@ -2,6 +2,7 @@ from src.read_handlers.readhandler import ReadHandler
 import pandas as pd
 from src.exceptions import EmptyPlaylistError
 from src.playlist_shared_utils import check_file_type
+from src.setup_logging import raise_and_log
 
 
 class ReadExcelHandler(ReadHandler):
@@ -22,17 +23,17 @@ class ReadExcelHandler(ReadHandler):
                 usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
             )
         except FileNotFoundError:
-            self.raise_and_log(FileNotFoundError, f"Playlist file {source} does not exist to load songs from.")
+            raise_and_log(FileNotFoundError, f"Playlist file {source} does not exist to load songs from.")
         except pd.errors.ParserError:
-            self.raise_and_log(
+            raise_and_log(
                 pd.errors.ParserError,
                 f"Check the format of playlist file {source}.  It is not parsing as an excel.")
         except ValueError:
-            self.raise_and_log(
+            raise_and_log(
                 ValueError,
                 f"Check the headers and fields of playlist file {source}. "
                 f"One or more fields contains invalid values.")
         if songs.empty:
-            self.raise_and_log(EmptyPlaylistError, "Playlist source contains no songs")
+            raise_and_log(EmptyPlaylistError, "Playlist source contains no songs")
         self.logger.info(f"loaded {len(songs)} songs into the song list")
         return songs

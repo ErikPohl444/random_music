@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from setup_logging import logger
+from src.setup_logging import logger
 
 
 class ReadHandler(ABC):
@@ -9,10 +9,6 @@ class ReadHandler(ABC):
     def __init__(self, read_handler_logger: logger, source_file_name: str):
         self.logger = read_handler_logger
         self.read_file_name = source_file_name
-
-    def raise_and_log(self, logged_exception: Exception, exception_message: str):
-        self.logger.error(exception_message)
-        raise logged_exception(exception_message)
 
     @abstractmethod
     def get_songlist(self, source: str):

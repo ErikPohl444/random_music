@@ -1,6 +1,5 @@
-import pandas as pd
 import json
-from setup_logging import logger
+from src.setup_logging import logger
 import argparse
 import sqlite3
 from src.read_handlers.readhandler import ReadHandler
@@ -139,7 +138,6 @@ def select_write_songlist_handler(args: argparse.Namespace, configs: dict) -> Wr
     elif args.wc:
         return CSVWriteHandler(configs["csv_file_name"])
     raise ValueError("No write handler identified by cli arguments")
-
 
 
 def execute_random_song_selection():
