@@ -1,8 +1,11 @@
-import os
 from abc import ABC, abstractmethod
+
+import pandas.errors
+
 from setup_logging import logger
 import pandas as pd
 from playlist_shared_utils import check_file_type
+from src.exceptions import EmptyPlaylistError
 
 
 class ReadHandler(ABC):
@@ -12,9 +15,6 @@ class ReadHandler(ABC):
     @abstractmethod
     def get_songlist(self, source: str):
         pass
-
-
-
 
 
 class ReadBookmarksHandler(ReadHandler):
@@ -82,6 +82,8 @@ class ReadBookmarksHandler(ReadHandler):
             orient="index",
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
+        if not songs:
+            raise EmptyPlaylistError
         self.logger.info(
             f"loaded {len(songs)} songs into a song list"
         )
@@ -109,10 +111,27 @@ class ReadCSVHandler(ReadHandler):
                 header=0,
                 names=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
             )
-            self.logger.info(f"loaded {len(songs)} songs into the song list")
         except FileNotFoundError:
-            self.logger.error(f"file {source} does not exist to load.")
-            exit(1)
+            improved_message = f"Playlist file {source} does not exist to load songs from."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        except pandas.errors.ParserError:
+            improved_message = f"Check the format of playlist file {source}.  It is not parsing as a csv."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        except UnicodeDecodeError:
+            improved_message = f"Check the encoding of playlist file {source}.  It is not parsing as a UTF-8."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        except ValueError:
+            improved_message = f"Check the headers and fields of playlist file {source}.  One or more fields contains invalid values."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        if not songs:
+            improved_message = f"Playlist file {source} contained no songs."
+            self.logger.error(improved_message)
+            raise EmptyPlaylistError(improved_message)
+        self.logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
 
 
@@ -135,5 +154,7 @@ class ReadExcelHandler(ReadHandler):
             source,
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
+        if not songs:
+            raise EmptyPlaylistError
         self.read_logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
