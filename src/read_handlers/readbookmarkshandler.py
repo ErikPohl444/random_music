@@ -1,6 +1,6 @@
 import pandas as pd
 from src.exceptions import EmptyPlaylistError, PlaylistError
-from src.readhandler import ReadHandler
+from src.read_handlers.readhandler import ReadHandler
 from setup_logging import logger
 from src.myhtmlparser import MyHTMLParser
 
