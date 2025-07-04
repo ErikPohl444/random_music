@@ -11,7 +11,7 @@ class WriteHandler(ABC):
         self._write_file_name = file_name
 
     @abstractmethod
-    def write_songlist(self, songs, destination: str):
+    def write_songlist(self, songs):
         pass
 
 
