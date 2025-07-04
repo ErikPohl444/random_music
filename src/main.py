@@ -4,7 +4,10 @@ import setup_logging
 from setup_logging import logger
 import argparse
 import sqlite3
-from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadCSVHandler, ReadHandler
+from src.readhandler import ReadHandler
+from src.readcsvhandler import ReadCSVHandler
+from src.readbookmarkshandler import ReadBookmarksHandler
+from src.readexcelhandler import ReadExcelHandler
 from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler, WriteHandler
 from Browser import Browser
 from playlist import PlayList
