@@ -1,4 +1,4 @@
-from src.readhandler import ReadHandler
+from src.read_handlers.readhandler import ReadHandler
 import pandas as pd
 from src.exceptions import EmptyPlaylistError
 from playlist_shared_utils import check_file_type
