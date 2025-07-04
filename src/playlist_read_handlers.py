@@ -32,6 +32,7 @@ class ReadBookmarksHandler(ReadHandler):
         Returns:
             List of two strings representing the name and then the url
         """
+
         url_start_loc: int = html_line.find('A HREF="') + 8
         url_end_loc: int = html_line.find('"', url_start_loc + 1)
         url: str = html_line[url_start_loc:url_end_loc]
@@ -55,11 +56,13 @@ class ReadBookmarksHandler(ReadHandler):
             with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
                     if linecount != 0 and 'youtube' in line and '<DT>' in line:
-                        name, url = self._split_a_href(line)
-                        bookmarks_names_urls.update({key: (name, url)})
+                        song_name, song_url = self._split_a_href(line)
+                        bookmarks_names_urls.update({key: (song_name, song_url)})
                         key += 1
         except FileNotFoundError as e:
-            self.logger.error(f"exception encountered when opening bookmark file and parsing the bookmarks: {e}")
+            improved_message = f"Playlist file {bookmark_file_name} does not exist to load songs from: {e}"
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
         return bookmarks_names_urls
 
     def get_songlist(self, source: str) -> pd.DataFrame:
@@ -124,7 +127,8 @@ class ReadCSVHandler(ReadHandler):
             self.logger.error(improved_message)
             raise FileNotFoundError(improved_message)
         except ValueError:
-            improved_message = f"Check the headers and fields of playlist file {source}.  One or more fields contains invalid values."
+            improved_message = f"Check the headers and fields of playlist file {source}. " \
+                               f"One or more fields contains invalid values."
             self.logger.error(improved_message)
             raise FileNotFoundError(improved_message)
         if songs.empty:
@@ -150,11 +154,25 @@ class ReadExcelHandler(ReadHandler):
             dataframe: A dataframe containing all of the song data from the file.
         """
         check_file_type(source, ['.xlsx'])
-        songs = pd.read_excel(
-            source,
-            usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
-        )
+        try:
+            songs = pd.read_excel(
+                source,
+                usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
+            )
+        except FileNotFoundError:
+            improved_message = f"Playlist file {source} does not exist to load songs from."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        except pandas.errors.ParserError:
+            improved_message = f"Check the format of playlist file {source}.  It is not parsing as an excel."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
+        except ValueError:
+            improved_message = f"Check the headers and fields of playlist file {source}. " \
+                               f"One or more fields contains invalid values."
+            self.logger.error(improved_message)
+            raise FileNotFoundError(improved_message)
         if songs.empty:
             raise EmptyPlaylistError
-        self.read_logger.info(f"loaded {len(songs)} songs into the song list")
+        self.logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
