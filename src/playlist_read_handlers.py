@@ -82,7 +82,7 @@ class ReadBookmarksHandler(ReadHandler):
             orient="index",
             columns=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
-        if not songs:
+        if songs.empty:
             raise EmptyPlaylistError
         self.logger.info(
             f"loaded {len(songs)} songs into a song list"
@@ -127,7 +127,7 @@ class ReadCSVHandler(ReadHandler):
             improved_message = f"Check the headers and fields of playlist file {source}.  One or more fields contains invalid values."
             self.logger.error(improved_message)
             raise FileNotFoundError(improved_message)
-        if not songs:
+        if songs.empty:
             improved_message = f"Playlist file {source} contained no songs."
             self.logger.error(improved_message)
             raise EmptyPlaylistError(improved_message)
@@ -154,7 +154,7 @@ class ReadExcelHandler(ReadHandler):
             source,
             usecols=[self.SONG_NAME_COLUMN, self.SONG_URL_COLUMN]
         )
-        if not songs:
+        if songs.empty:
             raise EmptyPlaylistError
         self.read_logger.info(f"loaded {len(songs)} songs into the song list")
         return songs
