@@ -122,6 +122,7 @@ def select_read_songlist_handler(args: argparse.Namespace) -> ReadHandler:
         return ReadBookmarksHandler(logger, args.read_from_bookmarks)
     elif args.read_from_csv:
         return ReadCSVHandler(logger, None)
+    raise ValueError("No read handler identified by cli arguments")
 
 
 def select_write_songlist_handler(args: argparse.Namespace, configs: dict) -> WriteHandler:
@@ -137,6 +138,8 @@ def select_write_songlist_handler(args: argparse.Namespace, configs: dict) -> Wr
         return ExcelWriteHandler(configs["xlsx_file_name"])
     elif args.wc:
         return CSVWriteHandler(configs["csv_file_name"])
+    raise ValueError("No write handler identified by cli arguments")
+
 
 
 def execute_random_song_selection():
