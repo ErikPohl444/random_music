@@ -4,8 +4,8 @@ import setup_logging
 from setup_logging import logger
 import argparse
 import sqlite3
-from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadCSVHandler
-from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler
+from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadCSVHandler, ReadHandler
+from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler, WriteHandler
 from Browser import Browser
 from Playlist import PlayList
 from playlist_shared_utils import check_file_type
@@ -109,6 +109,35 @@ def get_args(configs: dict):
     return parser.parse_args()
 
 
+def select_read_songlist_handler(args: dict) -> ReadHandler:
+    """Choose a read handler
+
+    Args:
+        args: dict: arguments passed to program
+    Returns:
+        ReadHandler
+    """
+    if args.read_from_bookmarks:
+        return ReadBookmarksHandler(logger)
+    elif args.read_from_csv:
+        return ReadCSVHandler(logger)
+
+
+def select_write_songlist_handler(args: dict, configs: dict) -> WriteHandler:
+    """Choose a write handler and set the write file name based on args and configs
+
+    Args:
+        args: dict: arguments passed to program
+        configs: dict: configs loaded at runtime
+    Returns:
+        WriteHandler
+    """
+    if args.wx:
+        return ExcelWriteHandler(configs["xlsx_file_name"])
+    elif args.wc:
+        return CSVWriteHandler(configs["csv_file_name"])
+
+
 def execute_random_song_selection():
     """Reads configurations and, based on the configurations, loads a list of song data, selecting one to play.
 
@@ -123,19 +152,12 @@ def execute_random_song_selection():
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
     args = get_args(configs)
     db_conn = get_db_connection(configs["db_path"])
-
     my_playlist = PlayList(chrome_browser, logger)
-    if args.read_from_bookmarks:
-        my_playlist.read_songlist_handler = ReadBookmarksHandler(logger)
-    elif args.read_from_csv:
-        my_playlist.read_songlist_handler = ReadCSVHandler(logger)
+    my_playlist.read_songlist_handler = select_read_songlist_handler(args)
     if my_playlist.read_songlist_handler:
         songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
     if songs.bool:
-        if args.wx:
-            my_playlist.write_songlist_handler = ExcelWriteHandler(configs["xlsx_file_name"])
-        elif args.wc:
-            my_playlist.write_songlist_handler = CSVWriteHandler
+        my_playlist.write_songlist_handler = select_write_songlist_handler(args, configs)
         if my_playlist.write_songlist_handler:
             my_playlist.write_songlist_handler.write_songlist(songs)
         my_playlist.play_random()
