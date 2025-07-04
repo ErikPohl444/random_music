@@ -109,7 +109,7 @@ def get_args(configs: dict):
     return parser.parse_args()
 
 
-def select_read_songlist_handler(args: dict) -> ReadHandler:
+def select_read_songlist_handler(args: argparse.Namespace) -> ReadHandler:
     """Choose a read handler
 
     Args:
@@ -123,7 +123,7 @@ def select_read_songlist_handler(args: dict) -> ReadHandler:
         return ReadCSVHandler(logger)
 
 
-def select_write_songlist_handler(args: dict, configs: dict) -> WriteHandler:
+def select_write_songlist_handler(args: argparse.Namespace, configs: dict) -> WriteHandler:
     """Choose a write handler and set the write file name based on args and configs
 
     Args:
