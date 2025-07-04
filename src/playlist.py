@@ -2,6 +2,8 @@ import random
 import setup_logging
 from Browser import Browser
 import pandas as pd
+from src.exceptions import ReadHandlerNotFoundError
+
 
 
 class PlayList:
@@ -27,6 +29,8 @@ class PlayList:
     def read_songs(self, source: str):
         if self.read_songlist_handler:
             self.songs = self.read_songlist_handler.get_songlist(source)
+        else:
+            raise ReadHandlerNotFoundError
         return self.songs
 
     def play_random(self) -> bool:

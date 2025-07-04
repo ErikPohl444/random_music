@@ -7,7 +7,7 @@ import sqlite3
 from playlist_read_handlers import ReadBookmarksHandler, ReadExcelHandler, ReadCSVHandler, ReadHandler
 from playlist_write_handlers import CSVWriteHandler, ExcelWriteHandler, WriteHandler
 from Browser import Browser
-from Playlist import PlayList
+from playlist import PlayList
 from playlist_shared_utils import check_file_type
 
 # i went class happy here.  kinda demonstrates how even clean coding using a design pattern can contribute
