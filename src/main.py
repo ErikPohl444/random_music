@@ -30,7 +30,7 @@ def get_db_connection(db_path: str) -> sqlite3.connect:
         db_path: str: path to database
 
     Returns:
-        bool: connection.
+        sqlite3.connect: connection.
     """
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row  # Optional, for dict-like row access
@@ -119,28 +119,25 @@ def execute_random_song_selection():
         None
     """
 
-    # good config.json will have all elements in config_template.json
-    # except just the file type used will need a good value
     configs: json = read_config_file()
     chrome_browser = Browser(configs["chrome_path"] + " %s", logger)
-    # read cli arguments
     args = get_args(configs)
-    # get db connection
     db_conn = get_db_connection(configs["db_path"])
 
     my_playlist = PlayList(chrome_browser, logger)
     if args.read_from_bookmarks:
         my_playlist.read_songlist_handler = ReadBookmarksHandler(logger)
-    # if args.read_from_csv:
-    #     my_playlist.read_songlist_handler = ReadCSVHandler(logger)
-    songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
+    elif args.read_from_csv:
+        my_playlist.read_songlist_handler = ReadCSVHandler(logger)
+    if my_playlist.read_songlist_handler:
+        songs: pd.DataFrame = my_playlist.read_songs(args.read_from_bookmarks)
     if songs.bool:
         if args.wx:
-            my_playlist.write_songlist_handler = ExcelWriteHandler
-            my_playlist.write_songlist_handler.write_songlist(songs, configs["xlsx_file_name"])
-        # if args.wc:
-        #     my_playlist.write_songlist_handler = CSVWriteHandler
-        #     my_playlist.write_songlist_handler.write_songlist(songs, configs["csv_file_name"])
+            my_playlist.write_songlist_handler = ExcelWriteHandler(configs["xlsx_file_name"])
+        elif args.wc:
+            my_playlist.write_songlist_handler = CSVWriteHandler
+        if my_playlist.write_songlist_handler:
+            my_playlist.write_songlist_handler.write_songlist(songs)
         my_playlist.play_random()
     db_conn.close()
 
