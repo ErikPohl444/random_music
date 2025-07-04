@@ -6,7 +6,7 @@ from html.parser import HTMLParser
 from setup_logging import logger
 import pandas as pd
 from playlist_shared_utils import check_file_type
-from src.exceptions import EmptyPlaylistError
+from src.exceptions import PlaylistError, EmptyPlaylistError
 
 
 class MyHTMLParser(HTMLParser):
@@ -14,7 +14,8 @@ class MyHTMLParser(HTMLParser):
         super().__init__()
         self.in_anchor = False
         self.link_text = ""
-        self.links = []
+        self.last_link_text = ""
+        self.last_url = ""
 
     def handle_starttag(self, tag, attrs):
         if tag == "a":
@@ -30,7 +31,8 @@ class MyHTMLParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag == "a" and self.in_anchor:
-            self.links.append({'href': self.current_link, 'text': self.link_text.strip()})
+            self.last_url = self.current_link
+            self.last_link_text = self.link_text.strip()
             self.in_anchor = False
             self.current_link = None
             self.link_text = ""
@@ -63,8 +65,13 @@ class ReadBookmarksHandler(ReadHandler):
 
         parser = MyHTMLParser()
         parser.feed(html_line)
-        link = parser.links[0]
-        return [link['text'], link['href']]
+        if not parser.last_link_text or not parser.last_url:
+            improved_exception = f"HTML LINE {html_line} doesn't contain enough information to divide into link and text"
+            raise PlaylistError(improved_exception)
+        return (parser.last_link_text, parser.last_url)
+
+    def _interesting_html_line(self, html_line: str) -> bool:
+        return 'youtube' in html_line and '<DT>' in html_line
 
     def _read_youtube_links(self, bookmark_file_name: str) -> dict:
         """Reads a flat file containing a bookmarks export from Chrome and extracts the youtube links
@@ -76,14 +83,14 @@ class ReadBookmarksHandler(ReadHandler):
             dict: A Dict containing all youtube link name and urls
         """
         bookmarks_names_urls: dict = {}
-        key = 0
+        songlist_index = 0
         try:
             with open(bookmark_file_name, newline='') as file_handle:
                 for linecount, line in enumerate(file_handle):
-                    if linecount != 0 and 'youtube' in line and '<DT>' in line:
-                        song_name, song_url = self._split_a_href(line)
-                        bookmarks_names_urls.update({key: (song_name, song_url)})
-                        key += 1
+                    if linecount != 0:
+                        if self._interesting_html_line(line):
+                            bookmarks_names_urls.update({songlist_index: self._split_a_href(line)})
+                            songlist_index += 1
         except FileNotFoundError as e:
             improved_message = f"Playlist file {bookmark_file_name} does not exist to load songs from: {e}"
             self.logger.error(improved_message)
