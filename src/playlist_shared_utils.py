@@ -1,5 +1,7 @@
 import os
 from src.setup_logging import raise_and_log
+
+
 def check_file_type(file_name: str, file_exts: list[str]) -> bool:
     _, ext = os.path.splitext(file_name)
     if ext.lower() not in file_exts:
