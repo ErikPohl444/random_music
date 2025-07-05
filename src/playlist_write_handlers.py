@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.setup_logging import logger
+from src.setup_logging import logger, raise_and_log
 from playlist_shared_utils import check_file_type
 
 
@@ -18,7 +18,14 @@ class WriteHandler(ABC):
 class ExcelWriteHandler(WriteHandler):
 
     def write_songlist(self, songs):
-        songs.to_excel(self._write_file_name, index_label="Index")
+        try:
+            songs.to_excel(self._write_file_name, index_label="Index")
+        except IOError:
+            raise_and_log(IOError, f"Error writing {self._write_file_name}")
+        logger.info(
+            f"completed writing {len(songs)} songs "
+            f"from song list into {self._write_file_name}"
+        )
 
 
 class CSVWriteHandler(WriteHandler):
@@ -33,11 +40,14 @@ class CSVWriteHandler(WriteHandler):
                     boolean: Success flag for the write operation.
                 """
         check_file_type(self._write_file_name, ['.csv'])
-        songs.to_csv(
-            self._write_file_name,
-            columns=[CSVWriteHandler.SONG_NAME_COLUMN, CSVWriteHandler.SONG_URL_COLUMN],
-            index_label="Index"
-        )
+        try:
+            songs.to_csv(
+                self._write_file_name,
+                columns=[CSVWriteHandler.SONG_NAME_COLUMN, CSVWriteHandler.SONG_URL_COLUMN],
+                index_label="Index"
+            )
+        except IOError:
+            raise_and_log(IOError, f"Error writing {self._write_file_name}")
         logger.info(
             f"completed writing {len(songs)} songs "
             f"from song list into {self._write_file_name}"

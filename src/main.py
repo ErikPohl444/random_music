@@ -158,10 +158,10 @@ def execute_random_song_selection():
     my_playlist.read_songlist_handler = select_read_songlist_handler(args)
     my_playlist.read_songs()
     if my_playlist.songs.bool:
+        my_playlist.play_random()
         my_playlist.write_songlist_handler = select_write_songlist_handler(args, configs)
         if my_playlist.write_songlist_handler:
             my_playlist.write_songlist_handler.write_songlist(my_playlist.songs)
-        my_playlist.play_random()
     db_conn.close()
 
 
