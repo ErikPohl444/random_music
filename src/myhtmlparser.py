@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 
+
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -7,6 +8,7 @@ class MyHTMLParser(HTMLParser):
         self.link_text = ""
         self.last_link_text = ""
         self.last_url = ""
+        self.current_link = ""
 
     def handle_starttag(self, tag, attrs):
         if tag == "a":

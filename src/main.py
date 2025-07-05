@@ -120,7 +120,7 @@ def select_read_songlist_handler(args: argparse.Namespace) -> ReadHandler:
     if args.read_from_bookmarks:
         return ReadBookmarksHandler(logger, args.read_from_bookmarks)
     elif args.read_from_csv:
-        return ReadCSVHandler(logger, None)
+        return ReadCSVHandler(logger, args.read_from_csv)
     raise ValueError("No read handler identified by cli arguments")
 
 
